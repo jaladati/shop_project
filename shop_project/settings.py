@@ -39,13 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # external apps
+    'django_render_partial',
+
     # internal apps
     'home',
     'account',
     'product',
 
-    # external apps
-    'django_render_partial',
 ]
 
 MIDDLEWARE = [
