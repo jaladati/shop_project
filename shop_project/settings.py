@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # external apps
+    'django_jalali',
     'django_render_partial',
+    'colorfield',
 
     # internal apps
     'home',
