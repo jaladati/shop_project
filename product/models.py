@@ -40,8 +40,10 @@ class ProductColorVariant(models.Model):
         ("#964B00", "قهوه ای"),
         ("#808080", "طوسی"),
     ]
-    color_name = models.CharField(unique=True, max_length=300, verbose_name="نام رنگ")
-    color_hex_code = ColorField(samples=COLOR_PALETTE, verbose_name="کد hex رنگ")
+    color_name = models.CharField(
+        unique=True, max_length=300, verbose_name="نام رنگ")
+    color_hex_code = ColorField(
+        samples=COLOR_PALETTE, verbose_name="کد hex رنگ")
     stock_count = models.PositiveBigIntegerField(verbose_name="تعداد موجودی")
 
     class Meta:
@@ -70,8 +72,13 @@ class Product(models.Model):
 
     description = models.TextField(verbose_name="توضیحات کامل")
 
-    size = models.CharField(max_length=100, null=True, blank=True, verbose_name="اندازه")
-    color_variant = models.ManyToManyField(to=ProductColorVariant, related_name="products")
+    size = models.CharField(max_length=100, null=True,
+                            blank=True, verbose_name="اندازه")
+    color_variant = models.ManyToManyField(
+        to=ProductColorVariant, related_name="products")
+
+    image = models.ImageField(
+        upload_to="images/products", null=True, blank=True, verbose_name="تصویر")
 
     objects = jmodels.jManager()
 
@@ -98,3 +105,16 @@ class Product(models.Model):
     def final_price(self):
         return self.price - self.price * self.off / 100
 
+
+class ProductGallery(models.Model):
+    product = models.ForeignKey(
+        to=Product, on_delete=models.CASCADE, related_name="images", verbose_name="محصول")
+    image = models.ImageField(
+        upload_to="images/products", verbose_name="تصویر")
+
+    class Meta:
+        verbose_name = "گالری محصولات"
+        verbose_name_plural = "گالری های محصولات"
+
+    def __str__(self) -> str:
+        return F"{self.product}"
