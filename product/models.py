@@ -7,12 +7,25 @@ from django_jalali.db import models as jmodels
 from colorfield.fields import ColorField
 
 
+# managers
+class EnabledManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_enable=True)
+
+# TODO: makemigrations and migrate then complete the latest products and commit and finally move to linux.
+
+
 class Category(models.Model):
     title = models.CharField(max_length=255, verbose_name="عنوان")
     is_enable = models.BooleanField(default=True, verbose_name="فعال")
     parent = models.ForeignKey(
         to="self", on_delete=models.SET_NULL, null=True, blank=True, related_name="categories", verbose_name="والد")
     slug = models.SlugField(max_length=300, blank=True, verbose_name="اسلاگ")
+    image = models.ImageField(
+        upload_to="images/categories", null=True, verbose_name="تصویر")
+
+    objects = models.Manager()
+    enabled = EnabledManager()
 
     class Meta:
         verbose_name = "دسته بندی"
@@ -57,6 +70,7 @@ class ProductColorVariant(models.Model):
 class Product(models.Model):
     title = models.CharField(max_length=255, verbose_name="عنوان")
     slug = models.SlugField(max_length=300, blank=True, verbose_name="اسلاگ")
+    is_enable = models.BooleanField(default=True, verbose_name="فعال")
 
     price = models.PositiveBigIntegerField(verbose_name="قیمت")
     off = models.DecimalField(
@@ -81,6 +95,7 @@ class Product(models.Model):
         upload_to="images/products", null=True, blank=True, verbose_name="تصویر")
 
     objects = jmodels.jManager()
+    enabled = EnabledManager()
 
     class Meta:
         ordering = ['-created_time', '-updated_time']
