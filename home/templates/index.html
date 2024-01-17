@@ -26,8 +26,8 @@
                         <div class="col-lg-6 col-md-6">
                             <div class="single-deal">
                                 <div class="overlay"></div>
-                                <img src="{{ category.image.url }}" alt="" height="100%" width="100%">
-                                <a href="{{ category.image.url }}" class="img-pop-up" target="_blank">
+                                <img src="{{ category.image.url }}" alt="" height="270px" width="350px">
+                                <a href="{% url 'product:list'  %}?category={{ category.slug }}">
                                     <div class="deal-details">
                                         <h6 class="deal-title">{{ category.title }}</h6>
                                     </div>
@@ -67,12 +67,7 @@
                             <div class="product-details">
                                 <h6>{{ product.title | truncatewords:8 }}</h6>
                                 <div class="price">
-                                    {% if product.final_price != product.price %}
-                                        <h6>${{product.final_price|separate}}</h6>
-                                        <h6 class="l-through">${{product.price|separate}}</h6>
-                                    {% else %}
-                                        <h6>${{product.price|separate}}</h6>
-                                    {% endif %}
+                                    {% include "includes/price_off.html" with product=product %}
                                 </div>
                                 <div class="prd-bottom">
 

@@ -1,0 +1,8 @@
+{% load static %}
+<select onchange="setProductFilter({paginate_by:value, paginate_change:'true'})">
+    <option selected disabled>نمایش {{paginate_by}} محصول</option>
+    <option value="5">نمایش 5 محصول</option>
+    <option value="10">نمایش 10 محصول</option>
+    <option value="15">نمایش 15 محصول</option>
+</select>
+<script src="{% static 'js/custom.js' %}"></script>

@@ -17,7 +17,7 @@ class Category(models.Model):
     title = models.CharField(max_length=255, verbose_name="عنوان")
     is_enable = models.BooleanField(default=True, verbose_name="فعال")
     parent = models.ForeignKey(
-        to="self", on_delete=models.SET_NULL, null=True, blank=True, related_name="categories", verbose_name="والد")
+        to="self", on_delete=models.SET_NULL, null=True, blank=True, related_name="childs", verbose_name="والد")
     slug = models.SlugField(max_length=300, blank=True, verbose_name="اسلاگ")
     image = models.ImageField(
         upload_to="images/categories", null=True, verbose_name="تصویر")
@@ -28,6 +28,17 @@ class Category(models.Model):
     class Meta:
         verbose_name = "دسته بندی"
         verbose_name_plural = "دسته بندی ها"
+
+    def get_products(self) -> list:
+        """return all products of this category and its subcategories"""
+        products = []
+        products.extend(self.products.all())
+        for sub_category in self.childs.all():
+            if sub_category.childs.all():
+                products.extend(sub_category.get_products())
+            else:
+                products.extend(sub_category.products.all())        
+        return products
 
     def __str__(self) -> str:
         return self.title

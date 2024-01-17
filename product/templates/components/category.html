@@ -1,0 +1,40 @@
+{% load poll_extras %}
+
+<div class="head">دسته بندی ها</div>
+<ul class="main-categories">
+    {% if request.GET.category %}
+        <li class="main-nav-list">
+            <a onclick="setProductFilter({category: '', category_change: 'true'})", cursor>
+                همه ی محصولات
+            </a>
+        </li>
+    {% endif %}
+
+    {% for category in categories %}
+        <li class="main-nav-list">
+            <a {% if request.GET.category == category.slug %} href="#{{category.slug}}"
+                data-toggle="collapse" aria-expanded="true" aria-controls="{{ category.slug }}"
+                {% else %}onclick="setProductFilter({category: '{{category.slug}}', category_change: 'true'})"{% endif %}>
+                <span class="lnr lnr-arrow-right"></span>
+                <span class="number">({% products_lenght category=category %})</span> {{category.title}}
+                {% if forloop.last and request.GET.category %}↓{% endif %}
+            </a>
+            {% if request.GET.category == category.slug %}
+            <ul class="collapse show" id="{{category.slug}}" data-toggle="collapse" aria-expanded="false"
+                aria-controls="{{category.slug}}">
+
+                {% for sub_category in category.childs.all %}
+                    <li class="main-nav-list child">
+                        <a onclick="setProductFilter({category: '{{sub_category.slug}}', category_change: 'true'})">
+                            <span class="number">({% products_lenght category=sub_category %})</span> {{ sub_category.title }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </li>
+    {% empty %}
+        دسته بندی ای وجود ندارد
+    {% endfor %}
+    
+</ul>

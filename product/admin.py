@@ -6,6 +6,7 @@ from django_jalali import admin as jadmin
 class CategoryAdmin(admin.ModelAdmin):
     exclude = ['slug']
     list_display = ['title', 'is_enable']
+    readonly_fields = ['slug']
     list_editable = ['is_enable']
     list_filter = ['is_enable', 'parent']
     search_fields = ['title']

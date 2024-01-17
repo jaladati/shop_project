@@ -248,24 +248,22 @@ $(document).ready(function(){
 
     $(function(){
 
-        if(document.getElementById("price-range")){
-        
+        if(document.getElementById('price-range')){
         var nonLinearSlider = document.getElementById('price-range');
-        
-        noUiSlider.create(nonLinearSlider, {
-            connect: true,
-            behaviour: 'tap',
-            start: [ 500, 4000 ],
-            range: {
-                // Starting at 500, step the value by 500,
-                // until 4000 is reached. From there, step by 1000.
-                'min': [ 0 ],
-                '10%': [ 500, 500 ],
-                '50%': [ 4000, 1000 ],
-                'max': [ 10000 ]
-            }
-        });
-
+        var startPrice = Number(document.getElementById('price').getAttribute('start-price'));
+        var endPrice = Number(document.getElementById('price').getAttribute('end-price'));
+        var dbMaxPrice = Number(document.getElementById('price').getAttribute('db-max-price'));
+        var noUiSliderData = {
+          connect: true,
+          behaviour: 'tap',
+          start: [ startPrice, endPrice ],
+          step: 1000,
+          range: {
+            'min': [ 0 ],
+            'max': [ dbMaxPrice ]
+          }
+        }
+        noUiSlider.create(nonLinearSlider, noUiSliderData);
 
         var nodes = [
             document.getElementById('lower-value'), // 0
@@ -274,8 +272,13 @@ $(document).ready(function(){
 
         // Display the slider value and how far the handle moved
         // from the left edge of the slider.
-        nonLinearSlider.noUiSlider.on('update', function ( values, handle, unencoded, isTap, positions ) {
-            nodes[handle].innerHTML = values[handle];
+        nonLinearSlider.noUiSlider.on('update', function (values, handle, unencoded, isTap, positions){
+            nodes[handle].innerHTML = Number(values[handle]).toFixed();
+        });
+        nonLinearSlider.noUiSlider.on('change', function ( values, handle, unencoded, isTap, positions ) {
+            var start_price = Number(values[0]), end_price = Number(values[1])
+            var data = {start_price: start_price, end_price: end_price};
+            setProductFilter(data);
         });
 
         }
@@ -327,8 +330,6 @@ $(document).ready(function(){
 
     function increaseValue(quantityAmount) {
         value = parseInt(quantityAmount.value, 10);
-
-        console.log(quantityAmount, quantityAmount.value);
 
         value = isNaN(value) ? 0 : value;
         value++;

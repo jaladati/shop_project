@@ -15,7 +15,7 @@
 	<!-- meta character set -->
 	<meta charset="UTF-8">
 	<!-- Site Title -->
-	<title>{% block title %}shop project{% endblock %}</title>
+	<title>shop project | {% block title %}{% endblock %}</title>
 	<!--
 		CSS
 		=============================================
@@ -25,15 +25,14 @@
 </head>
 
 <body>
-	
 	{% render_partial 'home.views.HeaderComponentView' %}
-
+	
 	{% block content %}{% endblock %}
-
+	
 	{% render_partial 'home.views.FooterComponentView' %}
 
 	{% include "references/footer.html" %}
-	
+ 
 </body>
 
 </html>

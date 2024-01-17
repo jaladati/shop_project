@@ -3305,6 +3305,7 @@ label {
   display: block;
   line-height: 50px;
   padding-left: 10px;
+  cursor: pointer;
   border-bottom: 1px solid #eee; }
   .sidebar-categories .main-nav-list a:hover {
     color: #ffba00; }
@@ -3476,7 +3477,8 @@ label {
     display: none; }
   .price-range-area .value-wrapper {
     margin-top: 20px;
-    color: #cccccc; }
+    /* color: #cccccc; } */
+    color: #666; }
     .price-range-area .value-wrapper .to {
       margin: 0 5px; }
   .price-range-area .price {
