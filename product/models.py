@@ -6,6 +6,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django_jalali.db import models as jmodels
 from colorfield.fields import ColorField
 
+from account.models import User
+
 
 # managers
 class EnabledManager(models.Manager):
@@ -57,6 +59,8 @@ class Product(models.Model):
     off = models.DecimalField(
         max_digits=5, decimal_places=1, default=0, validators=[MaxValueValidator(100.0), MinValueValidator(0.0)], verbose_name="تخفیف")
 
+    specification = models.JSONField(default=dict, blank=True, null=True, verbose_name="مشخصات")
+
     created_time = jmodels.jDateTimeField(
         auto_now_add=True, verbose_name="تاریخ ایجاد")
     updated_time = jmodels.jDateTimeField(
@@ -65,10 +69,8 @@ class Product(models.Model):
     category = models.ForeignKey(to=Category, null=True, blank=True,
                                  on_delete=models.SET_NULL, related_name="products", verbose_name="دسته بندی")
 
+    short_description = models.CharField(max_length=350, verbose_name="توضیحات کوتاه")
     description = models.TextField(verbose_name="توضیحات کامل")
-
-    size = models.CharField(max_length=100, null=True,
-                            blank=True, verbose_name="اندازه")
 
     image = models.ImageField(
         upload_to="images/products", verbose_name="تصویر")
@@ -140,8 +142,31 @@ class ProductGallery(models.Model):
         upload_to="images/products", verbose_name="تصویر")
 
     class Meta:
-        verbose_name = "گالری محصولات"
-        verbose_name_plural = "گالری های محصولات"
+        verbose_name = "تصویر محصول"
+        verbose_name_plural = "تصاویر محصول"
 
     def __str__(self) -> str:
-        return F"{self.product}"
+        return F"img-{self.pk}-{self.product}"
+
+class ProductComment(models.Model):
+    product = models.ForeignKey(
+        to=Product, on_delete=models.CASCADE, related_name="comments", verbose_name="محصول")
+    user = models.ForeignKey(
+        to=User, on_delete=models.CASCADE, related_name="products_comments", verbose_name="کاربر")
+    parent = models.ForeignKey(
+        to="self", on_delete=models.CASCADE, related_name="childs", blank=True, null=True, verbose_name="والد")
+
+    text = models.TextField(verbose_name="متن")
+    is_enable = models.BooleanField(default=True, verbose_name="فعال")
+    created_time = jmodels.jDateTimeField(
+        auto_now_add=True, verbose_name="تاریخ ایجاد")
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["-created_time"])
+        ]
+        verbose_name = "نظر"
+        verbose_name_plural = "نظرات"
+
+    def __str__(self) -> str:
+        return F"{self.product}-{self.user}"
