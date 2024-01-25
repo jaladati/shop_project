@@ -115,3 +115,12 @@ function setProductColor(colorId, colorName, productStock, productPrice, product
     setProductPrice(productPrice, productFinalPrice);
 }
 
+
+function productInStockFilter() {
+    var isChecked = document.getElementById("toggle-switch-checkbox").checked;
+    if (isChecked) {
+        setProductFilter({"in-stock": "true"})
+    } else {
+        setProductFilter({"in-stock": "false"})
+    }
+}

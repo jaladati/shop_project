@@ -57,7 +57,9 @@ class ProductListView(ListView):
                 end_price = db_max_price
             else:
                 products = list(filter(lambda product: end_price >= product.final_price >= start_price, products))
-                
+                if self.request.GET.get("in-stock") == "true":
+                    products = list(filter(lambda product: product.stock_count, products))
+
         context["categories"] = categories
         context["page_obj"] = self.paginate_queryset(products, self.get_paginate_by(products))[1]
         context["start_price"] = start_price
@@ -127,6 +129,9 @@ def product_list_filter(request: HttpRequest):
 
 
     products = list(filter(lambda product: end_price >= product.final_price >= start_price, products))
+
+    if request.GET.get("in-stock") == "true":
+        products = list(filter(lambda product: product.stock_count, products))
 
     paginate_by = request.GET.get("paginate_by")
 

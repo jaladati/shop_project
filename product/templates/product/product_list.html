@@ -56,7 +56,11 @@
 				<div class="common-filter">
 					{% include "components/price_filter.html" with start_price=start_price end_price=end_price %}
 				</div>
-
+				<label class="toggle-switch">
+					<input id="toggle-switch-checkbox" type="checkbox" onchange="productInStockFilter()">
+					<span class="slider round"></span>
+				</label>				  
+				<label>فقط محصولات موجود</label>
 			</div>
 		</div>
 		<!-- Start Product Aria -->
