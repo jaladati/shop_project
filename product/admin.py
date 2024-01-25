@@ -11,8 +11,12 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['title']
 
 
-class ProductGalleryInLine(admin.TabularInline):
+class ProductGalleryInLine(admin.StackedInline):
     model = ProductGallery
+
+
+class ProductColorVariantInline(admin.TabularInline):
+    model = ProductColorVariant
 
 
 @admin.register(Product)
@@ -27,17 +31,11 @@ class ProductAdmin(admin.ModelAdmin):
     raw_id_fields = ['category']
     inlines = [
         ProductGalleryInLine,
+        ProductColorVariantInline,
     ]
 
     def short_title(self, obj):
         return F"{obj.title[:15]}..."
-
-
-@admin.register(ProductColorVariant)
-class ProductColorVariantAdmin(admin.ModelAdmin):
-    list_display = ['color_name', 'stock_count']
-    list_editable = ['stock_count']
-    search_fields = ['color_name', 'color_hex_code']
 
 
 @admin.register(ProductComment)

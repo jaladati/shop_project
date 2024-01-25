@@ -20,7 +20,8 @@
 		CSS
 		=============================================
 	-->
-	{% include "references/header.html" %}
+	{% include "references/styles.html" %}
+	{% include "references/scripts.html" %}
 
 </head>
 
@@ -30,9 +31,6 @@
 	{% block content %}{% endblock %}
 	
 	{% render_partial 'home.views.FooterComponentView' %}
-
-	{% include "references/footer.html" %}
- 
 </body>
 
 </html>

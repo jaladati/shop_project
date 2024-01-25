@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 from django.db.models import Sum
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -92,6 +93,12 @@ class Product(models.Model):
     def save(self, *args, **kwargs) -> None:
         self.slug = slugify(F"{self.title}-{self.pk}", allow_unicode=True)
         return super().save(*args, **kwargs)
+    
+    def get_absolute_url(self):
+        return reverse("product:detail", kwargs={'slug':self.slug})
+
+    def in_stock_color_variants(self):
+        return self.color_variants.filter(stock_count__gt=0)
 
     @property
     def stock_count(self):
@@ -120,6 +127,9 @@ class ProductColorVariant(models.Model):
     product = models.ForeignKey(to=Product, on_delete=models.CASCADE,
                                 related_name="color_variants", verbose_name="محصول")
 
+    price = models.PositiveBigIntegerField(null=True, blank=True, verbose_name="قیمت")
+    off = models.DecimalField(
+        max_digits=5, decimal_places=1, default=0, validators=[MaxValueValidator(100.0), MinValueValidator(0.0)], verbose_name="تخفیف")
 
     color_name = models.CharField(
         max_length=300, verbose_name="نام رنگ")
@@ -133,6 +143,10 @@ class ProductColorVariant(models.Model):
 
     def __str__(self) -> str:
         return F"{self.color_name}-{self.stock_count}"
+
+    @property
+    def final_price(self):
+        return int(self.price - self.price * self.off / 100)
 
 
 class ProductGallery(models.Model):
@@ -154,12 +168,15 @@ class ProductComment(models.Model):
     user = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name="products_comments", verbose_name="کاربر")
     parent = models.ForeignKey(
-        to="self", on_delete=models.CASCADE, related_name="childs", blank=True, null=True, verbose_name="والد")
+        to="self", on_delete=models.CASCADE, related_name="childs", limit_choices_to={"parent": None}, blank=True, null=True, verbose_name="والد")
 
-    text = models.TextField(verbose_name="متن")
+    text = models.TextField(verbose_name="نظر")
     is_enable = models.BooleanField(default=True, verbose_name="فعال")
     created_time = jmodels.jDateTimeField(
         auto_now_add=True, verbose_name="تاریخ ایجاد")
+
+    objects = jmodels.jManager()
+    enabled = EnabledManager()
 
     class Meta:
         indexes = [
@@ -169,4 +186,4 @@ class ProductComment(models.Model):
         verbose_name_plural = "نظرات"
 
     def __str__(self) -> str:
-        return F"{self.product}-{self.user}"
+        return F"{self.product}-{self.user.username}-{self.pk}"
