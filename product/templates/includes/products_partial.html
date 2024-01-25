@@ -3,9 +3,9 @@
     {% for product in products %}
         <div class="col-lg-4 col-md-6">
             <div class="single-product">
-                <img class="img-fluid" src="{{ product.image.url }}" alt="" width="190" heigh="190">
+                <img class="img-fluid" src="{{ product.image.url }}" alt="" width="160" heigh="160">
                 <div class="product-details">
-                    <h6>{{ product.title }}</h6>
+                    <h6>{{ product.title | truncatewords:8 }}</h6>
                     <div class="price">
                         {% include "includes/price_off.html" with product=product %}
                     </div>
@@ -23,7 +23,7 @@
                             <span class="lnr lnr-sync"></span>
                             <p class="hover-text">مقایسه</p>
                         </a>
-                        <a href="" class="social-info">
+                        <a href="{{ product.get_absolute_url }}" class="social-info">
                             <span class="lnr lnr-move"></span>
                             <p class="hover-text">جزئیات کالا</p>
                         </a>

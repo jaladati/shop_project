@@ -47,7 +47,7 @@ function setProductFilter(data) {
         paramData[key] = value;
     };
 
-    if ("paginate_change" in paramData){
+    if ("paginate_change" in paramData) {
         deleteParameterWithOutReload("page")
     }
 
@@ -62,7 +62,56 @@ function setProductFilter(data) {
         };
         $("#products-aria").html(res["products"]);
         $(".pagination").html(res["pagination"]);
-        $("#common-filter").html(res["price_filter"])
+        $("#common-filter").html(res["price_filter"]);
     });
+}
+
+function replyComment(parentId, userName) {
+    document.getElementById("parentId").value = parentId;
+    document.getElementById("myTab").scrollIntoView({ behavior: "smooth" });
+    var comment = document.getElementById("commentText");
+    comment.focus();
+    comment.placeholder = `پاسخ برای نظر ${userName}`
+}
+
+function setStockMessage(stockCount) {
+    var message;
+    if (stockCount > 5) {
+        message = "موجود است";
+    } else if (stockCount > 0) {
+        message = `تنها ${stockCount} عدد در انبار موجود است`;
+    } else {
+        message = "ناموجود";
+    };
+    document.getElementById("in-stock").innerHTML = `<span>موجودی</span> : ${message}`;
+}
+
+
+function separate(number) {
+    return (number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+
+function setProductPrice(price, finalPrice) {
+    var message;
+    if (price != finalPrice) {
+        message = `<h2>\$${separate(finalPrice)}</h2>
+        <h4 style="text-decoration: line-through;color:#ddddcc">\$${separate(price)}</h4>`;
+    } else {
+        message = `<h2>\$${separate(price)}</h2>`;
+    }
+    document.getElementById("product-price-aria").innerHTML = message
+};
+
+
+function setProductColor(colorId, colorName, productStock, productPrice, productFinalPrice) {
+    var a = document.getElementsByClassName('color-icon-aria')[0].getElementsByTagName('a')
+    for (var i = 0; i < a.length; i++) {
+        a[i].style.borderColor = "gainsboro"
+    }
+    document.getElementById(colorId).style.borderColor = "blue";
+    document.getElementById("color-name").innerText = "رنگ: " + colorName;
+    setStockMessage(productStock);
+    setProductPrice(productPrice, productFinalPrice);
 }
 

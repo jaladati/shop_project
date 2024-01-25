@@ -250,9 +250,9 @@ $(document).ready(function(){
 
         if(document.getElementById('price-range')){
         var nonLinearSlider = document.getElementById('price-range');
-        var startPrice = Number(document.getElementById('price').getAttribute('start-price'));
-        var endPrice = Number(document.getElementById('price').getAttribute('end-price'));
-        var dbMaxPrice = Number(document.getElementById('price').getAttribute('db-max-price'));
+        var startPrice = Number(nonLinearSlider.getAttribute('start-price'));
+        var endPrice = Number(nonLinearSlider.getAttribute('end-price'));
+        var dbMaxPrice = Number(nonLinearSlider.getAttribute('db-max-price'));
         var noUiSliderData = {
           connect: true,
           behaviour: 'tap',

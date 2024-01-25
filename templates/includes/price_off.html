@@ -1,8 +1,11 @@
 {% load poll_extras %}
-
-{% if product.final_price != product.price %}
-<h6>${{product.final_price|separate}}</h6>
-<h6 class="l-through">${{product.price|separate}}</h6>
+{% if product.stock_count %}
+    {% if product.final_price != product.price %}
+        <h6>${{product.final_price|separate}}</h6>
+        <h6 class="l-through">${{product.price|separate}}</h6>
+    {% else %}
+        <h6>${{product.price|separate}}</h6>
+    {% endif %}
 {% else %}
-<h6>${{product.price|separate}}</h6>
+    ناموجود
 {% endif %}

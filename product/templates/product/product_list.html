@@ -2,26 +2,26 @@
 
 {% load poll_extras %}
 
-{% block title %}products{% endblock %}
+{% block title %}لیست محصولات{% endblock %}
 
 
 {% block content %}
 
 <!-- Start Banner Area -->
 <div class="category">
-<section class="banner-area organic-breadcrumb">
-	<div class="container">
-		<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
-			<div class="col-first">
-				<h1>محصولات</h1>
-				<nav class="d-flex align-items-center">
-					<a href="{% url 'home:index' %}">خانه<span class="lnr lnr-arrow-right"></span></a>
-					<a href="{% url 'product:list' %}">محصولات</a>
-				</nav>
+	<section class="banner-area organic-breadcrumb">
+		<div class="container">
+			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+				<div class="col-first">
+					<h1>لیست محصولات</h1>
+					<nav class="d-flex align-items-center">
+						<a href="{% url 'home:index' %}">خانه<span class="lnr lnr-arrow-left"></span></a>
+						<a href="{% url 'product:list' %}">محصولات</a>
+					</nav>
+				</div>
 			</div>
 		</div>
-	</div>
-</section>
+	</section>
 </div>
 <!-- End Banner Area -->
 
@@ -33,9 +33,9 @@
 				{% include "components/category.html" %}
 			</div>
 			<div class="sidebar-filter mt-50">
-				<div class="top-filter-head">Product Filters</div>
+				<div class="top-filter-head">فیلتر محصولات</div>
 				<div class="common-filter">
-					<div class="head">Brands</div>
+					<div class="head">برند</div>
 					<form action="#">
 						<ul>
 							<li class="filter-list"><input class="pixel-radio" type="radio" id="apple"

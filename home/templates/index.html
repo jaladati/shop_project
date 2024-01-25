@@ -60,7 +60,8 @@
             </div>
             <div class="row">
                 <!-- single product -->
-                {% for product in products|slice:":8" %}
+                {% comment %} {% include "includes/products_partial.html" with products=products|slice:":8" %} {% endcomment %}
+                {% comment %} {% endcomment %}{% for product in products|slice:":8" %}
                     <div class="col-lg-3 col-md-6">
                         <div class="single-product">
                             <img class="img-fluid" src="{{product.image.url}}" alt="">
@@ -73,7 +74,7 @@
 
                                     <a href="" class="social-info">
                                         <span class="ti-bag"></span>
-                                        <p class="hover-text">اضافه به سبد</p>
+                                        <p class="hover-text">افزودن به سبد</p>
                                     </a>
                                     <a href="" class="social-info">
                                         <span class="lnr lnr-heart"></span>
@@ -83,7 +84,7 @@
                                         <span class="lnr lnr-sync"></span>
                                         <p class="hover-text">مقایسه</p>
                                     </a>
-                                    <a href="" class="social-info">
+                                    <a href="{{product.get_absolute_url}}" class="social-info">
                                         <span class="lnr lnr-move"></span>
                                         <p class="hover-text">جزئیات کالا</p>
                                     </a>
@@ -91,7 +92,7 @@
                             </div>
                         </div>
                     </div>
-                {% endfor %}
+                {% endfor %} 
             </div>
         </div>
     </div>

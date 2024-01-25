@@ -146,7 +146,9 @@ class ProductColorVariant(models.Model):
 
     @property
     def final_price(self):
-        return int(self.price - self.price * self.off / 100)
+        price = self.price or self.product.price
+        off = self.off or self.product.off
+        return int(price - price * off / 100)
 
 
 class ProductGallery(models.Model):
