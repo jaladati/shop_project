@@ -2,13 +2,18 @@
 <div class="price-range-area">
     <div id="price-range" value="valuetest" 
         start-price ="{{ start_price }}" end-price="{{ end_price }}" 
-        db-max-price="{{ db_max_price }}"></div>
-    <div class="value-wrapper d-flex" dir="rtl">
-        <div class="price">از:</div>
-        <div id="lower-value"></div>
-        <span>$</span>
-        <div class="to">تا:</div>
-        <div id="upper-value"></div>
-        <span>$</span>
+        db-max-price="{{ db_max_price }}">
+    </div>
+    <div class="value-wrapper" dir="rtl">
+        <div class="d-flex">
+            <div class="price">از:</div>
+            <div id="lower-value"></div>
+            <span>$</span>
+        </div>
+        <div class="d-flex">
+            <div class="to">تا:</div>
+            <div id="upper-value"></div>
+            <span>$</span>
+        </div>
     </div>
 </div>

@@ -60,39 +60,7 @@
             </div>
             <div class="row">
                 <!-- single product -->
-                {% comment %} {% include "includes/products_partial.html" with products=products|slice:":8" %} {% endcomment %}
-                {% comment %} {% endcomment %}{% for product in products|slice:":8" %}
-                    <div class="col-lg-3 col-md-6">
-                        <div class="single-product">
-                            <img class="img-fluid" src="{{product.image.url}}" alt="">
-                            <div class="product-details">
-                                <h6>{{ product.title | truncatewords:8 }}</h6>
-                                <div class="price">
-                                    {% include "includes/price_off.html" with product=product %}
-                                </div>
-                                <div class="prd-bottom">
-
-                                    <a href="" class="social-info">
-                                        <span class="ti-bag"></span>
-                                        <p class="hover-text">افزودن به سبد</p>
-                                    </a>
-                                    <a href="" class="social-info">
-                                        <span class="lnr lnr-heart"></span>
-                                        <p class="hover-text">لیست آرزو</p>
-                                    </a>
-                                    <a href="" class="social-info">
-                                        <span class="lnr lnr-sync"></span>
-                                        <p class="hover-text">مقایسه</p>
-                                    </a>
-                                    <a href="{{product.get_absolute_url}}" class="social-info">
-                                        <span class="lnr lnr-move"></span>
-                                        <p class="hover-text">جزئیات کالا</p>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %} 
+                {% include "includes/products_partial.html" with products=products|slice:":8" class='col-lg-3 col-md-6' %}
             </div>
         </div>
     </div>

@@ -1,18 +1,30 @@
-from typing import Any
-from django.http import HttpRequest, JsonResponse
-from django.utils.decorators import method_decorator
-from django.views.generic import ListView, DetailView
-from django.shortcuts import get_object_or_404, render
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.views.decorators.http import require_GET
+from django.shortcuts import (
+    get_object_or_404,
+    render,
+)
 from django.template.loader import render_to_string
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-
+from django.http import HttpRequest, JsonResponse
+from django.views.decorators.http import require_GET
+from django.views.generic import (
+    ListView,
+    DetailView,
+)
+from django.core.paginator import (
+    Paginator,
+    PageNotAnInteger,
+    EmptyPage,
+)
 from operator import attrgetter
+from typing import Any
 
 from .form import ProductCommentForm
-
-from .models import Product, Category, ProductComment
+from .models import (
+    Product,
+    Category,
+    ProductComment,
+)
 
 
 class ProductListView(ListView):
@@ -57,7 +69,7 @@ class ProductListView(ListView):
                 end_price = db_max_price
             else:
                 products = list(filter(lambda product: end_price >= product.final_price >= start_price, products))
-                if self.request.GET.get("in-stock") == "true":
+                if self.request.GET.get("in_stock") == "true":
                     products = list(filter(lambda product: product.stock_count, products))
 
         context["categories"] = categories
@@ -130,7 +142,7 @@ def product_list_filter(request: HttpRequest):
 
     products = list(filter(lambda product: end_price >= product.final_price >= start_price, products))
 
-    if request.GET.get("in-stock") == "true":
+    if request.GET.get("in_stock") == "true":
         products = list(filter(lambda product: product.stock_count, products))
 
     paginate_by = request.GET.get("paginate_by")

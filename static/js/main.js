@@ -276,7 +276,7 @@ $(document).ready(function(){
             nodes[handle].innerHTML = Number(values[handle]).toFixed();
         });
         nonLinearSlider.noUiSlider.on('change', function ( values, handle, unencoded, isTap, positions ) {
-            var start_price = Number(values[0]), end_price = Number(values[1])
+            var start_price = Number(values[0]), end_price = Number(values[1]);
             var data = {start_price: start_price, end_price: end_price};
             setProductFilter(data);
         });

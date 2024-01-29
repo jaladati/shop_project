@@ -119,8 +119,8 @@ function setProductColor(colorId, colorName, productStock, productPrice, product
 function productInStockFilter() {
     var isChecked = document.getElementById("toggle-switch-checkbox").checked;
     if (isChecked) {
-        setProductFilter({"in-stock": "true"})
+        setProductFilter({"in_stock": "true"})
     } else {
-        setProductFilter({"in-stock": "false"})
+        setProductFilter({"in_stock": "false"})
     }
 }

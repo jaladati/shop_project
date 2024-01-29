@@ -5,8 +5,9 @@ from product.models import Category, Product
 
 
 def index(request):
+    categories = list(reversed(Category.enabled.all()))
     context = {
-        "categories": Category.enabled.all(),
+        "categories": categories,
         "products": Product.enabled.all(),
     }
     return render(request, "index.html", context)
