@@ -6891,6 +6891,11 @@ label {
   text-align: left;
 }
 
+.login_form .form-group .creat_account .errorlist {
+  direction: rtl;
+  text-align: center;
+}
+
 .login_form .form-group .creat_account input {
   height: auto;
   margin-right: 10px;
@@ -6898,7 +6903,7 @@ label {
 
 .login_form .form-group .primary-btn {
   display: block;
-  border-radius: 0px;
+  border-radius: 10px;
   line-height: 38px;
   width: 100%;
   text-transform: uppercase;
@@ -6913,7 +6918,8 @@ label {
   font-size: 14px;
   color: #777777;
   font-family: "Roboto", sans-serif;
-  margin-top: 20px;
+  margin-top: 15px;
+  margin-bottom: 5px;
   display: block;
 }
 

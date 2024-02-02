@@ -1,0 +1,63 @@
+{% extends "shared/base.html" %}
+
+
+{% load static %}
+
+{% block title %}ثبت نام{% endblock %}
+
+
+{% block content %}
+
+{% if creat_account_alert %}
+    {% comment %} show success message {% endcomment %}
+{% endif %}
+
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>ثبت نام</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="{% url 'home:index' %}">خانه<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'account:register' %}">ثبت نام</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Banner Area -->
+
+<!--================Login Box Area =================-->
+<section class="login_box_area section_gap">
+    <div class="container">
+        <div class="row">
+            <div class="container col-md-8">
+                <div class="login_form_inner reg_form">
+                    <div class="builling-title">
+                        <h3>ثبت نام</h3>
+                    </div>
+                    <form class="row login_form" method="post" id="contactForm" novalidate="novalidate">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="col-md-12 form-group">
+                                <div class="creat_account">
+                                    {{ field.errors }}
+                                    {{ field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="col-md-12 form-group">
+                            <button type="submit" value="submit" class="primary-btn">ساخت حساب</button>
+                            <a href="#">حساب دارید؟</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Login Box Area =================-->
+
+
+{% endblock %}

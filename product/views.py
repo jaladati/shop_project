@@ -19,7 +19,7 @@ from django.core.paginator import (
 from operator import attrgetter
 from typing import Any
 
-from .form import ProductCommentForm
+from .forms import ProductCommentForm
 from .models import (
     Product,
     Category,

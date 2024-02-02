@@ -1,0 +1,43 @@
+{% extends "shared/base.html" %}
+
+{% block title %}فعال سازی حساب کاربری{% endblock %}
+
+
+{% block content %}
+
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>ثبت نام</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="{% url 'home:index' %}">خانه<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="#">فعال سازی حساب کاربری</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Banner Area -->
+
+<section class="section_gap">
+    <div class="container">
+        <div class="row">
+            <div class="container col-md-6">
+                <div class="login_form_inner reg_form" dir="rtl">
+                    <h3>
+                        اکانت شما فعال شد.
+                    </h3>
+                    <div class="form-group">
+                        <a class="primary-btn" href="#">
+                            رفتن به صفحه ورود
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

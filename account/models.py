@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     avatar = models.ImageField(
         upload_to="images/profiles", default="images/profiles/default-avatar.png", blank=True, verbose_name="آواتار")
+    email = models.EmailField("ایمیل", unique=True)
     email_activate_code = models.CharField(
         max_length=100, verbose_name="کد فعالسازی ایمیل")
     is_active = models.BooleanField(default=False, verbose_name="فعال")
