@@ -1,0 +1,62 @@
+{% extends "shared/base.html" %}
+
+{% load static %}
+
+{% block title %}ورود{% endblock %}
+
+
+{% block content %}
+
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>ورود</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="{% url 'home:index' %}">خانه<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'account:login' %}">ورود</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Banner Area -->
+
+<!--================Login Box Area =================-->
+<section class="login_box_area section_gap">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="login_box_img">
+                    <img class="img-fluid" src="{% static 'img/login.jpg' %}" alt="">
+                    <div class="hover">
+                        <h4>عضو تازه ی سایت؟</h4>
+                        <a class="primary-btn" href="{% url 'account:register' %}">ایجاد یک حساب</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="login_form_inner">
+                    <h3>ورود</h3>
+                    <form class="row login_form" method="post" id="contactForm" novalidate="novalidate">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="col-md-12 form-group">
+                                {{ field.errors }}
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+                        <div class="col-md-12 form-group">
+                            <button type="submit" value="submit" class="primary-btn">ورود</button>
+                            <a href="#">فراموشی کلمه عبور؟</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Login Box Area =================-->
+
+{% endblock %}

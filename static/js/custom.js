@@ -4,7 +4,7 @@ var inputParams = new URLSearchParams(inputUrl.search);
 function updateInputUrlAndInputParams() {
     inputUrl = new URL(window.location.href);
     inputParams = new URLSearchParams(inputUrl.search);
-}
+};
 
 function setParameter(name, value) {
     let inputUrl = new URL(window.location.href);
@@ -12,7 +12,7 @@ function setParameter(name, value) {
 
     inputParams.set(name, value);
     window.location.assign(inputUrl.href.split("?")[0] + "?" + inputParams);
-}
+};
 
 function deleteParameter(name) {
     let inputUrl = new URL(window.location.href);
@@ -20,21 +20,21 @@ function deleteParameter(name) {
 
     inputParams.delete(name)
     window.location.assign(inputUrl.href.split("?")[0] + "?" + inputParams);
-}
+};
 
 function setParameterWithOutReload(name, value) {
     updateInputUrlAndInputParams()
     inputParams.set(name, value)
     var url = inputUrl.href.split("?")[0] + "?" + inputParams
     window.history.pushState("", "", url);
-}
+};
 
 function deleteParameterWithOutReload(name) {
     updateInputUrlAndInputParams()
     inputParams.delete(name)
     var url = inputUrl.href.split("?")[0] + "?" + inputParams
     window.history.pushState("", "", url);
-}
+};
 
 function setProductFilter(data) {
     for (let key in data) {
@@ -64,7 +64,7 @@ function setProductFilter(data) {
         $(".pagination").html(res["pagination"]);
         $("#common-filter").html(res["price_filter"]);
     });
-}
+};
 
 function replyComment(parentId, userName) {
     document.getElementById("parentId").value = parentId;
@@ -72,7 +72,7 @@ function replyComment(parentId, userName) {
     var comment = document.getElementById("commentText");
     comment.focus();
     comment.placeholder = `پاسخ برای نظر ${userName}`
-}
+};
 
 function setStockMessage(stockCount) {
     var message;
@@ -84,12 +84,12 @@ function setStockMessage(stockCount) {
         message = "ناموجود";
     };
     document.getElementById("in-stock").innerHTML = `<span>موجودی</span> : ${message}`;
-}
+};
 
 
 function separate(number) {
     return (number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
+};
 
 
 function setProductPrice(price, finalPrice) {
@@ -113,14 +113,32 @@ function setProductColor(colorId, colorName, productStock, productPrice, product
     document.getElementById("color-name").innerText = "رنگ: " + colorName;
     setStockMessage(productStock);
     setProductPrice(productPrice, productFinalPrice);
-}
+};
 
 
 function productInStockFilter() {
     var isChecked = document.getElementById("toggle-switch-checkbox").checked;
     if (isChecked) {
-        setProductFilter({"in_stock": "true"})
+        setProductFilter({ "in_stock": "true" })
     } else {
-        setProductFilter({"in_stock": "false"})
-    }
-}
+        setProductFilter({ "in_stock": "false" })
+    };
+};
+
+
+function logoutAlert() {
+    Swal.fire({
+        title: "مطمئنی؟",
+        icon: "warning",
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "خروج",
+        cancelButtonText: "متوقف کردن",
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.assign("/logout");
+        };
+    });
+};

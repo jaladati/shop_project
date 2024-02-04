@@ -8,8 +8,24 @@
 
 {% block content %}
 
-{% if creat_account_alert %}
-    {% comment %} show success message {% endcomment %}
+{% if create_account_alert %}
+    <script type="text/javascript">
+        window.onload = function(){
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "حساب شما با موفقیت ایجاد شد",
+                showConfirmButton: false,
+                timer: 1500
+            }).then((result) => {
+                Swal.fire({
+                    title: "فعال سازی حسابتان",
+                    icon: "warning",
+                    text: "برای فعال سازی حسابتان ایمیلی حاوی لینک فعال سازی برای شما ارسال شد در صورت عدم دریافت ایمیل از قسمت فراموشی کلمه عبور اقدام کنید"
+                })
+            })
+        };
+    </script>
 {% endif %}
 
 <!-- Start Banner Area -->
@@ -49,7 +65,7 @@
                         {% endfor %}
                         <div class="col-md-12 form-group">
                             <button type="submit" value="submit" class="primary-btn">ساخت حساب</button>
-                            <a href="#">حساب دارید؟</a>
+                            <a href="{% url 'account:login' %}">حساب دارید؟</a>
                         </div>
                     </form>
                 </div>

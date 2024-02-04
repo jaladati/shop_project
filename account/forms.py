@@ -39,3 +39,17 @@ class RegisterForm(forms.Form):
             return confirm_password
         
         raise forms.ValidationError("با گذرواژه همخوانی ندارد")
+
+
+class LoginForm(forms.Form):
+    email = forms.EmailField(
+        required=True, widget=forms.EmailInput(attrs={
+                "class": "form-control", "dir": "rtl",  "placeholder":"ایمیل", 'onfocus':"this.placeholder = ''", 'onblur':"this.placeholder = 'ایمیل'"
+        })
+    )
+    password = forms.CharField(
+        max_length=128, required=True,
+        widget=forms.PasswordInput(attrs={
+            "class": "form-control", "dir": "rtl",  "placeholder":"گذرواژه", 'onfocus':"this.placeholder = ''", 'onblur':"this.placeholder = 'گذرواژه'"
+        })
+    )

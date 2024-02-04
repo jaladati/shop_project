@@ -33,8 +33,12 @@
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                             aria-haspopup="true" aria-expanded="false">صفحات</a>
                             <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="#">ورود</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'account:register' %}">ثبت نام</a></li>
+                                {% if request.user.is_authenticated %}
+                                    <li class="nav-item"><a class="nav-link" onclick="logoutAlert()">خروج</a></li>
+                                {% else %}
+                                    <li class="nav-item"><a class="nav-link" href="{% url 'account:login' %}">ورود</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="{% url 'account:register' %}">ثبت نام</a></li>
+                                {% endif %}
                                 <li class="nav-item"><a class="nav-link" href="tracking.html">پیگیری</a></li>
                             </ul>
                         </li>
