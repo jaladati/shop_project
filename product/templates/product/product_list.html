@@ -78,24 +78,24 @@
 					</select>
 				</div>
 				<div class="sorting mr-auto" id="paginate">
-					{% include "components/paginate.html" with paginate_by=request.GET.paginate_by %}
+					{% include "components/paginate.html" %}
 				</div>
 				<div class="pagination">
-					{% include "components/paging.html" with page_obj=page_obj %}
+					{% include "components/paging.html" %}
 				</div>
 			</div>
 			<!-- End Filter Bar -->
 
 			<!-- Start Best Seller -->
 			<section class="lattest-product-area pb-40 category-list" id="products-aria">
-				{% include "includes/products_partial.html" with products=page_obj.object_list %}
+				{% include "includes/products_partial.html" %}
 			</section>
 			<!-- End Best Seller -->
 
 			<!-- Start Filter Bar -->
 			<div class="filter-bar d-flex flex-wrap align-items-center">
 				<div class="sorting mr-auto" id="paginate">
-					{% include "components/paginate.html" with paginate_by=request.GET.paginate_by %}
+					{% include "components/paginate.html" %}
 				</div>
 
 				<div class="pagination">

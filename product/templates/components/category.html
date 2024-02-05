@@ -16,7 +16,7 @@
                 data-toggle="collapse" aria-expanded="true" aria-controls="{{ category.slug }}"
                 {% else %}onclick="setProductFilter({category: '{{category.slug}}', category_change: 'true'})"{% endif %}>
                 <span class="lnr lnr-arrow-right"></span>
-                <span class="number">({% products_lenght category=category %})</span> {{category.title}}
+                <span class="number">({% products_lenght category=category enable_filter='true' %})</span> {{category.title}}
                 {% if forloop.last and request.GET.category %}↓{% endif %}
             </a>
             {% if request.GET.category == category.slug %}
@@ -26,7 +26,7 @@
                 {% for sub_category in category.childs.all %}
                     <li class="main-nav-list child">
                         <a onclick="setProductFilter({category: '{{sub_category.slug}}', category_change: 'true'})">
-                            <span class="number">({% products_lenght category=sub_category %})</span> {{ sub_category.title }}
+                            <span class="number">({% products_lenght category=sub_category enable_filter='true' %})</span> {{ sub_category.title }}
                         </a>
                     </li>
                 {% endfor %}
