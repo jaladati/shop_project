@@ -185,7 +185,6 @@ class ProductDetailView(DetailView):
     
     @method_decorator(login_required)
     def post(self, request: HttpRequest, slug):
-        print("\n\npost method runed\n\n!")
         form = ProductCommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)

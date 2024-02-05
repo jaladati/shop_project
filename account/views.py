@@ -1,7 +1,7 @@
 import random
 import string
 import datetime
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 from django.views.generic import View
 from django.contrib.auth.views import LogoutView
@@ -15,7 +15,12 @@ from utils.email_service import send_email
 from utils.decorators import logout_required
 
 from .models import User
-from .forms import LoginForm, RegisterForm
+from .forms import (
+    LoginForm,
+    RegisterForm,
+    ForgetPasswordForm,
+    ResetPasswordForm,
+)
 
 
 @method_decorator(logout_required, "dispatch")
@@ -99,4 +104,72 @@ class LoginView(View):
 
 
 class LogoutView(LogoutView):
-    next_page = "/"
+    next_page = reverse_lazy("home:index")
+
+
+@method_decorator(logout_required, "dispatch")
+class ForgetPasswordView(View):
+    def get(self, request):
+        form = ForgetPasswordForm()
+        context = {
+            "form": form
+        }
+        return render(request, "account/forget_password.html", context)
+    def post(self, request):
+        form = ForgetPasswordForm(request.POST)
+        context = {
+            "form": form
+        }
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = User.objects.filter(email=cd["email"]).first()
+            if user is not None:
+                send_email("فراموشی کلمه عبور", user.email,
+                       {"activate_code":user.email_activate_code}, "emails/forget_password.html")
+                user.last_login = datetime.datetime.now(datetime.timezone.utc)
+                user.save()
+                context["email_alert"] = "true"
+            else:
+                form.add_error("email", "کاربری با این ایمیل یافت نشد")
+        return render(request, "account/forget_password.html", context)
+
+
+@method_decorator(logout_required, "dispatch")
+class ResetPasswordView(View):
+    def get(self, request, activate_code):
+        user = User.objects.filter(email_activate_code=activate_code).first()
+        
+        if user is not None:
+            now = datetime.datetime.now(datetime.timezone.utc)
+            time_difference: datetime.timedelta = now - user.last_login
+            if time_difference.total_seconds() < 7200:
+                form = ResetPasswordForm()
+                context = {
+                    "form": form,
+                }
+                return render(request, "account/reset_password.html", context)
+        raise Http404()
+
+    def post(self, request, activate_code):
+        form = ResetPasswordForm(request.POST)
+        context = {
+            "form": form,
+        }
+        if form.is_valid():
+            user = User.objects.filter(email_activate_code=activate_code).first()
+            if user is  None:
+                raise Http404()
+
+            now = datetime.datetime.now(datetime.timezone.utc)
+            time_difference: datetime.timedelta = now - user.last_login
+            if time_difference.total_seconds() > 7200:
+                raise Http404()
+
+            cd = form.cleaned_data
+            user.is_active = True
+            password = cd["password"]
+            user.set_password(password)
+            user.email_activate_code = get_random_string(99)
+            user.save()
+            context["password_changed_alert"] = "true"
+        return render(request, "account/reset_password.html", context)
