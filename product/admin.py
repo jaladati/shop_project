@@ -22,9 +22,9 @@ class ProductColorVariantInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     exclude = ['slug']
-    list_display = ['short_title', 'price', 'off', 'stock_count']
+    list_display = ['short_title', 'price', 'off', 'stock_count', 'is_enable']
     readonly_fields = ['created_time', 'updated_time', 'stock_count']
-    list_editable = ['price', 'off']
+    list_editable = ['price', 'off', 'is_enable']
     date_hierarchy = "created_time"
     search_fields = ['title', 'short_description', 'description']
     list_filter = ['category']

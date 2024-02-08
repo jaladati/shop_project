@@ -48,8 +48,8 @@ INSTALLED_APPS = [
     'home',
     'account',
     'product',
+    'user_panel',
     'polls',
-
 ]
 
 MIDDLEWARE = [
@@ -95,7 +95,7 @@ DATABASES = {
 
 AUTH_USER_MODEL = 'account.User'
 
-LOGIN_URL = '/login/'
+LOGIN_URL = '/accounts/login/'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

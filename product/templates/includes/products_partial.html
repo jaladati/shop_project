@@ -1,6 +1,6 @@
 <div class="row">
     <!-- single product -->
-    {% for product in page_obj.object_list %}
+    {% for product in products %}
         <div class="{% if class %}{{class}}{% else %}col-lg-4 col-md-6{% endif %}">
             <div class="single-product">
                 <img class="img-fluid" src="{{ product.image.url }}">
@@ -33,7 +33,11 @@
         </div>
     {% empty %}
         <div class="rounded-medium py-4  px-5">
-            <h3>محصولی با این مشخصات پیدا نشد</h3>
+            <h4>
+                <div class="alert alert-danger" role="alert">
+                    محصولی با این مشخصات پیدا نشد
+                </div>
+            </h4>
         </div>
     {% endfor %}
 </div>

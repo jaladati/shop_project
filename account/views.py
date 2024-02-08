@@ -104,7 +104,7 @@ class LoginView(View):
 
 
 class LogoutView(LogoutView):
-    next_page = reverse_lazy("home:index")
+    next_page = reverse_lazy("account:login")
 
 
 @method_decorator(logout_required, "dispatch")

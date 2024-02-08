@@ -1,0 +1,8 @@
+from django.apps import AppConfig
+
+
+class UserPanelConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'user_panel'
+    verbose_name = 'پنل کاربری'
+    verbose_name_plural = 'پنل های کاربری'

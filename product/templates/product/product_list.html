@@ -88,7 +88,7 @@
 
 			<!-- Start Best Seller -->
 			<section class="lattest-product-area pb-40 category-list" id="products-aria">
-				{% include "includes/products_partial.html" %}
+				{% include "includes/products_partial.html" with products=page_obj.object_list %}
 			</section>
 			<!-- End Best Seller -->
 

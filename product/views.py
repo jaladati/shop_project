@@ -130,7 +130,7 @@ def product_list_filter(request: HttpRequest):
         paginate_by = context["paginate_by"]
         data["paginates"] = render_to_string("components/paginate.html", {"paginate_by": paginate_by})
 
-    data["products"] = render_to_string("includes/products_partial.html", {"page_obj":page_obj})
+    data["products"] = render_to_string("includes/products_partial.html", {"products":page_obj.object_list})
     data["pagination"] = render_to_string("components/paging.html", {"page_obj":page_obj})
     data["price_filter"] = render_to_string("components/price_filter.html", {"start_price":start_price, "end_price": end_price, "db_max_price": db_max_price})
 
