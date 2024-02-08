@@ -126,7 +126,7 @@ function productInStockFilter() {
 };
 
 
-function logoutAlert() {
+function logoutAlert(logoutUrl) {
     Swal.fire({
         title: "مطمئنی؟",
         icon: "warning",
@@ -138,7 +138,7 @@ function logoutAlert() {
         cancelButtonColor: "#3085d6",
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.assign("/logout");
+            window.location.assign(logoutUrl);
         };
     });
 };

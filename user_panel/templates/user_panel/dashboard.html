@@ -1,0 +1,53 @@
+{% extends "shared/base.html" %}
+
+{% block title %}
+پنل کاربری
+{% endblock %}
+
+{% block content %}
+
+<!-- start banner Area -->
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>داشبورد</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="{% url 'home:index' %}">خانه<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'user_panel:dashboard' %}">داشبورد</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End banner Area -->
+
+<section class="section_gap">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                {% include "components/menu.html" %}
+            </div>
+            <div class="col-md-9">
+                <div class="text-right">
+                    <h4>: نام کاربری</h4>
+                    <h5>{{ user.username }}</h5>
+                    <h4>: ایمیل</h4>
+                    <h5>{{ user.email }}</h5>
+                    {% with name=user.get_full_name address=user.address %}
+                    {% if name %}
+                    <h4>: نام و نام خانوادگی</h4>
+                    <h5>{{ name }}</h5>
+                    {% endif %}
+                    {% if address %}
+                    <h4>: آدرس</h4>
+                    <h5>{{ address }}</h5>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -91,7 +91,7 @@ class LoginView(View):
             if user is not None and user.check_password(password):
                 if user.is_active:
                     login(request, user)
-                    return redirect(reverse("home:index"))
+                    return redirect(reverse("user_panel:dashboard"))
                 else:
                     form.add_error("email", "این حساب هنوز فعال نشده است.")
             else:
