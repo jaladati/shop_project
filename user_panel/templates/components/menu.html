@@ -1,14 +1,18 @@
-<div class="list-group text-center">
-    <a href="{% url 'user_panel:dashboard' %}" class="list-group-item list-group-item-action active" aria-current="true">
-      پنل کاربری
+<div class="list-group text-center ">
+    <a href="{% url 'user_panel:dashboard' %}"
+        class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'dashboard' %}active custom-color{% endif %}"
+        aria-current="true">
+        پنل کاربری
     </a>
-    <a href="#" class="list-group-item list-group-item-action">
+    <a href="{% url 'user_panel:edit_profile' %}"
+        class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'edit_profile' %}active custom-color{% endif %}">
         ویرایش اطلاعات
     </a>
-    <a href="#" class="list-group-item list-group-item-action">
+    <a href="#"
+        class="list-group-item list-group-item-action {% if request.resolver_match.url_name == '#' %}active custom-color{% endif %}">
         تغییر کلمه عبور
     </a>
-    <a class="list-group-item list-group-item-action disabled">
-        A disabled link item
-    </a>
+</div>
+<div class="card">
+    <img class="card-img-bottom" src="{{ user.avatar.url }}">
 </div>
