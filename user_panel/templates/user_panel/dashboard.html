@@ -1,10 +1,18 @@
 {% extends "shared/base.html" %}
 
 {% block title %}
-پنل کاربری
+    پنل کاربری
 {% endblock %}
 
 {% block content %}
+
+{% if messages %}
+    <script type="text/javascript">
+        {% for message in messages %}
+            showSuccessAlert('{{message}}')
+        {% endfor %}
+    </script>
+{% endif %}
 
 <!-- start banner Area -->
 <section class="banner-area organic-breadcrumb">
@@ -32,12 +40,15 @@
                 <div class="text-right">
                     <h4>: نام کاربری</h4>
                     <h5>{{ user.username }}</h5>
+                    <br>
                     <h4>: ایمیل</h4>
                     <h5>{{ user.email }}</h5>
+                    <br>
                     {% with name=user.get_full_name address=user.address %}
                     {% if name %}
                     <h4>: نام و نام خانوادگی</h4>
                     <h5>{{ name }}</h5>
+                    <br>
                     {% endif %}
                     {% if address %}
                     <h4>: آدرس</h4>

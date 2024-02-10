@@ -67,7 +67,7 @@ class ResetPasswordForm(forms.Form):
     password = forms.CharField(
         max_length=128, required=True, validators=[validate_password],
         widget=forms.PasswordInput(attrs={
-            "class": "form-control", "dir": "rtl",  "placeholder":"گذرواژه جدید", 'onfocus':"this.placeholder = ''", 'onblur':"this.placeholder = 'گذرواژه'"
+            "class": "form-control", "dir": "rtl",  "placeholder":"گذرواژه جدید", 'onfocus':"this.placeholder = ''", 'onblur':"this.placeholder = 'گذرواژه جدید'"
         })
     )
     confirm_password = forms.CharField(

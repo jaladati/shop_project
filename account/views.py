@@ -5,10 +5,11 @@ from django.urls import reverse, reverse_lazy
 
 from django.views.generic import View
 from django.contrib.auth.views import LogoutView
-from django.contrib.auth import login
 from django.shortcuts import redirect, render
 from django.http import Http404, HttpRequest
+from django.contrib import messages
 from django.utils.crypto import get_random_string
+from django.contrib.auth import login
 from django.utils.decorators import method_decorator
 
 from utils.email_service import send_email
@@ -91,6 +92,7 @@ class LoginView(View):
             if user is not None and user.check_password(password):
                 if user.is_active:
                     login(request, user)
+                    messages.success(request, "خوش آمدید")
                     return redirect(reverse("user_panel:dashboard"))
                 else:
                     form.add_error("email", "این حساب هنوز فعال نشده است.")
@@ -157,7 +159,7 @@ class ResetPasswordView(View):
         }
         if form.is_valid():
             user = User.objects.filter(email_activate_code=activate_code).first()
-            if user is  None:
+            if user is None:
                 raise Http404()
 
             now = datetime.datetime.now(datetime.timezone.utc)

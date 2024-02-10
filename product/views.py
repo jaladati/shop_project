@@ -2,6 +2,7 @@ from django.shortcuts import (
     get_object_or_404,
     render,
 )
+from django.contrib import messages
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -157,8 +158,8 @@ class ProductDetailView(DetailView):
             if parent_id := request.POST.get("parent_id"):
                 comment.parent = get_object_or_404(ProductComment.enabled, parent=None, id=parent_id)
             comment.save()
+            messages.success(request, "کامنت شما با موفقیت ثبت شد")
             form = ProductCommentForm()
         self.object = self.get_object()
-        
         context = self.get_context_data(object=self.object, form=form)
         return render(request, self.template_name, context)

@@ -7,6 +7,14 @@
 
 {% block content %}
 
+{% if messages %}
+    <script type="text/javascript">
+        {% for message in messages %}
+            showSuccessAlert('{{message}}')
+        {% endfor %}
+    </script>
+{% endif %}
+
 <!-- Start Banner Area -->
 <section class="banner-area organic-breadcrumb">
     <div class="container">
@@ -48,7 +56,7 @@
                 <div class="s_product_text">
                     <h3>{{ product.title }}</h3>
                     {% with colors=product.in_stock_color_variants %}
-                    <div id="product-price-aria">
+                    <div id="product-price-area">
                         <script type = "text/javascript">setProductPrice({% if colors.first.price %}{{colors.first.price}}{% else %}{{product.price}}{% endif %}, {{colors.first.final_price}})</script>
                     </div>
                     <ul class="list">
@@ -67,7 +75,7 @@
                     <p>{{ product.short_description }}</p>
                     {% if colors.first.color_name != '_' and product.stock_count %}
                         <h6 id="color-name">رنگ: {{ colors.first.color_name }}</h6>
-                        <div class="color-icon-aria">
+                        <div class="color-icon-area">
                             {% for color in colors %}
                                 {% if color.stock_count %}
                                     {% with color_price=color.price %}

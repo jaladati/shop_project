@@ -29,7 +29,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col-xl-3 col-lg-4 col-md-5">
-			<div class="sidebar-categories" id="category-aria">
+			<div class="sidebar-categories" id="category-area">
 				{% include "components/category.html" %}
 			</div>
 			<div class="sidebar-filter mt-50">
@@ -53,7 +53,7 @@
 				</div>
 				<div class="well">
 				</div>
-				<div class="common-filter">
+				<div class="common-filter" id="price-filter-area">
 					{% include "components/price_filter.html" with start_price=start_price end_price=end_price %}
 				</div>
 				<br>
@@ -66,7 +66,7 @@
 				</div>
 			</div>
 		</div>
-		<!-- Start Product Aria -->
+		<!-- Start Product Area -->
 		<div class="col-xl-9 col-lg-8 col-md-7">
 			<!-- Start Filter Bar -->
 			<div class="filter-bar d-flex flex-wrap align-items-center">
@@ -87,7 +87,7 @@
 			<!-- End Filter Bar -->
 
 			<!-- Start Best Seller -->
-			<section class="lattest-product-area pb-40 category-list" id="products-aria">
+			<section class="lattest-product-area pb-40 category-list" id="products-area">
 				{% include "includes/products_partial.html" with products=page_obj.object_list %}
 			</section>
 			<!-- End Best Seller -->
@@ -104,7 +104,7 @@
 			</div>
 			<!-- End Filter Bar -->
 		</div>
-		<!-- End Product Aria -->
+		<!-- End Product Area -->
 	</div>
 </div>
 
