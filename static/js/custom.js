@@ -56,13 +56,14 @@ function setProductFilter(data) {
 
     $.get("/products/filter", paramData).then(res => {
         if (res["categories"]) {
-            $("#category-aria").html(res["categories"]);
+            $("#category-area").html(res["categories"]);
         } else if (res["paginates"]) {
             $(".paginate").html(res["paginates"]);
         };
-        $("#products-aria").html(res["products"]);
+        $("#products-area").html(res["products"]);
         $(".pagination").html(res["pagination"]);
-        $("#common-filter").html(res["price_filter"]);
+        $("#price-filter-area").html(res["price_filter"]);
+        $.getScript("/static/js/main.js")
     });
 };
 
@@ -100,12 +101,12 @@ function setProductPrice(price, finalPrice) {
     } else {
         message = `<h2>\$${separate(price)}</h2>`;
     }
-    document.getElementById("product-price-aria").innerHTML = message
+    document.getElementById("product-price-area").innerHTML = message
 };
 
 
 function setProductColor(colorId, colorName, productStock, productPrice, productFinalPrice) {
-    var a = document.getElementsByClassName('color-icon-aria')[0].getElementsByTagName('a')
+    var a = document.getElementsByClassName('color-icon-area')[0].getElementsByTagName('a')
     for (var i = 0; i < a.length; i++) {
         a[i].style.borderColor = "gainsboro"
     }
@@ -141,4 +142,17 @@ function logoutAlert(logoutUrl) {
             window.location.assign(logoutUrl);
         };
     });
+};
+
+
+function showSuccessAlert(message) {
+    window.onload = function () {
+        Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: message,
+            showConfirmButton: false,
+            timer: 1500
+        });
+    };
 };

@@ -8,8 +8,8 @@
         class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'edit_profile' %}active custom-color{% endif %}">
         ویرایش اطلاعات
     </a>
-    <a href="#"
-        class="list-group-item list-group-item-action {% if request.resolver_match.url_name == '#' %}active custom-color{% endif %}">
+    <a href="{% url 'user_panel:change_password' %}"
+        class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'change_password' %}active custom-color{% endif %}">
         تغییر کلمه عبور
     </a>
 </div>
