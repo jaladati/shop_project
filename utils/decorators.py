@@ -8,3 +8,12 @@ def logout_required(func):
             return redirect(reverse("home:index"))
         return func(request, *args, **kwargs)
     return wrap
+
+def superuser_required(error):
+    def decorator(func):
+        def wrap(request, *args, **kwargs):
+            if request.user.is_superuser:
+                return func(request, *args, **kwargs)
+            return error
+        return wrap
+    return decorator

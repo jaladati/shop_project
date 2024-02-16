@@ -145,14 +145,77 @@ function logoutAlert(logoutUrl) {
 };
 
 
-function showSuccessAlert(message) {
-    window.onload = function () {
+function showSuccessAlert(message, position, onload) {
+    function show() {
         Swal.fire({
-            position: "top-end",
+            position: position,
             icon: "success",
             title: message,
             showConfirmButton: false,
             timer: 1500
         });
     };
+    if (onload === true) {
+        window.onload = function () {
+            show()
+        };
+    } else {
+        show()
+    };
+};
+
+
+function removeComment(commentId) {
+    Swal.fire({
+        title: "مطمئنی؟",
+        icon: "warning",
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "حذف",
+        cancelButtonText: "متوقف کردن",
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.get("/products/remove-comment", {
+                comment_id: commentId
+            }).then(res => {
+                if (res["error"]) {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: res["error"],
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    commentListArea = res["comment_list_area"];
+                    $("#comment-list-area").html(commentListArea);
+                    showSuccessAlert("نظر با موفقیت حذف شد", "top-end");
+                };
+            });
+        };
+    });
+};
+
+
+function changeCommentStatus(commentId) {
+    $.get("/products/change-comment-status", {
+        comment_id: commentId
+    }).then(res => {
+        var error = res["error"]
+        if (error) {
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: error,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        } else {
+            var currentStatus = res["current_status"];
+            $(`#comment-${commentId}-status`).html(currentStatus);
+            showSuccessAlert(`وضعیت نظر به ${currentStatus} تغییر یافت`, "top-end");
+        };
+    });
 };

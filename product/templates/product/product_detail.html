@@ -1,6 +1,6 @@
 {% extends "shared/base.html" %}
 
-{% load static poll_extras jformat %}
+{% load static poll_extras %}
 
 {% block title %}جزئیات محصول{% endblock %}
 
@@ -10,7 +10,7 @@
 {% if messages %}
     <script type="text/javascript">
         {% for message in messages %}
-            showSuccessAlert('{{message}}')
+            showSuccessAlert('{{message}}', 'top-end', true)
         {% endfor %}
     </script>
 {% endif %}
@@ -55,6 +55,11 @@
             <div class="col-lg-5 offset-lg-1">
                 <div class="s_product_text">
                     <h3>{{ product.title }}</h3>
+                    <h3>
+                        {% if not product.is_enable %}
+                            (غیر فعال)
+                        {% endif %}
+                    </h3>
                     {% with colors=product.in_stock_color_variants %}
                     <div id="product-price-area">
                         <script type = "text/javascript">setProductPrice({% if colors.first.price %}{{colors.first.price}}{% else %}{{product.price}}{% endif %}, {{colors.first.final_price}})</script>
@@ -148,40 +153,8 @@
             <div class="tab-pane fade show active" id="contact" role="tabpanel" aria-labelledby="contact-tab">
                 <div class="row">
                     <div class="col-lg-6">
-                        <div class="comment_list">
-                            {% for comment in comments %}
-                                <div class="review_item">
-                                    <div class="media">
-                                        {% with user=comment.user %}
-                                        <div class="d-flex">
-                                            <img src="{{ user.avatar.url }}" alt="">
-                                        </div>
-                                        <div class="media-body">
-                                            <h4>{{ user.username }}</h4>
-                                            <h5>{{ comment.created_time | jformat }}</h5>
-                                            <a class="reply_btn" onclick="replyComment({{comment.id}}, '{{user.username}}')">پاسخ</a>
-                                        </div>
-                                        {% endwith %}
-                                    </div>
-                                    <p>{{ comment.text }}</p>
-                                </div>
-                                {% for sub_comment in  comment.childs.all %}
-                                    <div class="review_item reply">
-                                        {% with user=sub_comment.user %}
-                                        <div class="media">
-                                            <div class="d-flex">
-                                                <img src="{{ user.avatar.url }}" alt="">
-                                            </div>
-                                            <div class="media-body">
-                                                <h4>{{ user.username }}</h4>
-                                                <h5>{{ sub_comment.created_time | jformat }}</h5>
-                                            </div>
-                                        </div>
-                                        {% endwith %}
-                                        <p>{{ sub_comment.text }}</p>
-                                    </div>
-                                {% endfor %}
-                            {% endfor %}
+                        <div class="comment_list" id="comment-list-area">
+                            {% include "includes/comments.html" %}
                         </div>
                     </div>
 

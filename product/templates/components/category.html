@@ -15,22 +15,41 @@
             <a {% if request.GET.category == category.slug %} href="#{{category.slug}}"
                 data-toggle="collapse" aria-expanded="true" aria-controls="{{ category.slug }}"
                 {% else %}onclick="setProductFilter({category: '{{category.slug}}', category_change: 'true'})"{% endif %}>
-                <span class="lnr lnr-arrow-right"></span>
-                <span class="number">({% products_lenght category=category enable_filter='true' %})</span> {{category.title}}
+                {% if user.is_superuser %}
+                    <span class="number">({% products_lenght category=category %})</span>
+                {% else %}
+                    <span class="number">({% products_lenght category=category enable_filter='true' %})</span>
+                {% endif %}
+                {{category.title}}
+                {% if not category.is_enable %}
+                        (غیر فعال)
+                {% endif %}
                 {% if forloop.last and request.GET.category %}↓{% endif %}
             </a>
             {% if request.GET.category == category.slug %}
-            <ul class="collapse show" id="{{category.slug}}" data-toggle="collapse" aria-expanded="false"
-                aria-controls="{{category.slug}}">
+                <ul class="collapse show" id="{{category.slug}}" data-toggle="collapse" aria-expanded="false"
+                    aria-controls="{{category.slug}}">
 
-                {% for sub_category in category.childs.all %}
-                    <li class="main-nav-list child">
-                        <a onclick="setProductFilter({category: '{{sub_category.slug}}', category_change: 'true'})">
-                            <span class="number">({% products_lenght category=sub_category enable_filter='true' %})</span> {{ sub_category.title }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
+                    {% if user.is_superuser %}
+                        {% for sub_category in category.childs.all %}
+                            <li class="main-nav-list child">
+                                <a onclick="setProductFilter({category: '{{sub_category.slug}}', category_change: 'true'})">
+                                    <span class="number">({% products_lenght category=sub_category %})</span>                                    
+                                    {{sub_category.title}}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        {% for sub_category in category.get_enable_childs %}
+                            <li class="main-nav-list child">
+                                <a onclick="setProductFilter({category: '{{sub_category.slug}}', category_change: 'true'})">
+                                    <span class="number">({% products_lenght category=sub_category enable_filter='true' %})</span>                                    
+                                    {{sub_category.title}}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
             {% endif %}
         </li>
     {% empty %}

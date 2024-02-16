@@ -16,6 +16,23 @@ class EnabledManager(models.Manager):
         return super().get_queryset().filter(is_enable=True)
 
 
+class AccessControlledObjectManager(models.Manager):
+    def filter_queryset_by_user_perms(self, user: User):
+        """
+        Filter and return a queryset of model based on user permissions.
+
+        If the user is a superuser, the user has access to all model objects.
+        Otherwise, the user only has access to enabled model objects.
+        Require `model.enabled`.
+        """
+        if user.is_superuser:
+            return self.model.objects.all()
+        else:
+            return self.model.enabled.all()
+
+
+
+#models
 class Category(models.Model):
     title = models.CharField(max_length=255, verbose_name="عنوان")
     is_enable = models.BooleanField(default=True, verbose_name="فعال")
@@ -23,17 +40,20 @@ class Category(models.Model):
         to="self", on_delete=models.SET_NULL, null=True, blank=True, related_name="childs", verbose_name="والد")
     slug = models.SlugField(max_length=300, blank=True, verbose_name="اسلاگ")
     image = models.ImageField(
-        upload_to="images/categories", null=True, verbose_name="تصویر")
+        upload_to="images/categories", verbose_name="تصویر")
 
     objects = models.Manager()
     enabled = EnabledManager()
+    access_controlled = AccessControlledObjectManager()
 
     class Meta:
         verbose_name = "دسته بندی"
         verbose_name_plural = "دسته بندی ها"
 
     def get_products(self) -> list:
-        """return all products of this category and its subcategories"""
+        """
+        Return all products of this category and it's subcategories.
+        """
         products = []
         products.extend(self.products.all())
         for sub_category in self.childs.all():
@@ -42,13 +62,21 @@ class Category(models.Model):
             else:
                 products.extend(sub_category.products.all())        
         return products
+    
+    def get_enable_childs(self) -> list:
+        """
+        Return all of subcategories that are enable.
+        """
+        return self.childs.filter(is_enable=True)
 
     def __str__(self) -> str:
         return self.title
 
     def save(self, *args, **kwargs) -> None:
-        self.slug = slugify(F"{self.title}-{self.pk}", allow_unicode=True)
-        return super().save(*args, **kwargs)
+        if not self.pk:
+            super().save(*args, **kwargs)
+            self.slug = slugify(F"{self.title}-{self.pk}", allow_unicode=True)
+        super().save(*args, **kwargs)
 
 
 class Product(models.Model):
@@ -78,6 +106,7 @@ class Product(models.Model):
 
     objects = jmodels.jManager()
     enabled = EnabledManager()
+    access_controlled = AccessControlledObjectManager()
 
     class Meta:
         ordering = ['-created_time', '-updated_time']
@@ -91,7 +120,9 @@ class Product(models.Model):
         return F"{self.title}-{self.price}"
 
     def save(self, *args, **kwargs) -> None:
-        self.slug = slugify(F"{self.title}-{self.pk}", allow_unicode=True)
+        if not self.pk:
+            super().save(*args, **kwargs)
+            self.slug = slugify(F"{self.title}-{self.pk}", allow_unicode=True)
         return super().save(*args, **kwargs)
     
     def get_absolute_url(self):
@@ -164,6 +195,7 @@ class ProductGallery(models.Model):
     def __str__(self) -> str:
         return F"img-{self.pk}-{self.product}"
 
+
 class ProductComment(models.Model):
     product = models.ForeignKey(
         to=Product, on_delete=models.CASCADE, related_name="comments", verbose_name="محصول")
@@ -179,6 +211,7 @@ class ProductComment(models.Model):
 
     objects = jmodels.jManager()
     enabled = EnabledManager()
+    access_controlled = AccessControlledObjectManager()
 
     class Meta:
         indexes = [

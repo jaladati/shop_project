@@ -2,3 +2,49 @@
     background-color: #ffb300;
     border-color: #ffb300;
 }
+
+.review_item .media .media-body .delete_btn {
+    border: 1px solid #e0e0e0;
+    padding: 0px 15px;
+    display: inline-block;
+    line-height: 32px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-family: "Roboto", sans-serif;
+    color: #222222;
+    position: absolute;
+    right: 95px;
+    top: 14px;
+}
+
+.review_item .media .media-body .delete_btn:hover {
+    cursor: pointer;
+    background: #ff0000;
+    border-color: #ff0000;
+    color: #fff;
+}
+
+.review_item.reply .media .media-body .delete_btn {
+    right: 0;
+}
+
+.review_item .media .media-body .comment-status {
+    border: 1px solid #e0e0e0;
+    padding: 0px 10px;
+    line-height: 27px;
+    font-size: 12px;
+    position: absolute;
+    right: 150px;
+    top: 17px;
+}
+
+.review_item.reply .media .media-body .comment-status {
+    right: 55px;
+}
+
+.review_item .media .media-body .comment-status:hover {
+    cursor: pointer;
+    background-color: #ffb300;
+    border-color: #ffb300;
+    color: #fff;
+}

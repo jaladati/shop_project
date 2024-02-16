@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpResponseForbidden, HttpRequest, JsonResponse
 from django.views.decorators.http import require_GET
 from django.views.generic import (
     ListView,
@@ -20,6 +20,7 @@ from django.core.paginator import (
 from operator import attrgetter
 from typing import Any
 
+from utils.decorators import superuser_required
 from .forms import ProductCommentForm
 from .models import (
     Product,
@@ -28,37 +29,44 @@ from .models import (
 )
 
 
-def base_product_list_filter(request: HttpRequest):
-    order_num = request.GET.get("sort")
-    match order_num:
+def base_product_list_filter(request: HttpRequest) -> dict[str, Any]:
+    order_by = request.GET.get("sort")
+    match order_by:
         case "most-expensive":
             ordering = "-price"
         case "cheapest":
             ordering = "price"
         case "newest" | _:
             ordering = "-created_time"
-
-    db_categories = Category.enabled.all()
+    # Find categories based on user permissions.
+    is_superuser = request.user.is_superuser
+    if is_superuser:
+        db_categories = Category.objects.all()
+    else:
+        db_categories = Category.enabled.all()
+    
     category = request.GET.get("category")
 
     if category:
         category = get_object_or_404(db_categories, slug=category)
         categories = [category]
         while True:
-            if category.parent is not None:
-                categories.append(category.parent)
-                category = category.parent
+            if (parent := category.parent) is not None:
+                categories.insert(0, parent)
+                category = parent
             else:
                 break
-        products = categories[0].get_products()
-        products = list(filter(lambda product: product.is_enable, products))
+        products = categories[-1].get_products()
+        if not is_superuser:
+            products = list(filter(lambda product: product.is_enable, products))
         products = sorted(products, key=attrgetter(ordering.replace("-","")))
         if "-" in ordering:
             products.reverse()
-
-        categories = reversed(categories)
     else:
-        products = Product.enabled.order_by(ordering)
+        if is_superuser:
+            products = Product.objects.order_by(ordering)
+        else:
+            products = Product.enabled.order_by(ordering)
         categories = db_categories.filter(parent=None)
     
     if products:
@@ -115,7 +123,10 @@ class ProductListView(ListView):
 
 
 @require_GET
-def product_list_filter(request: HttpRequest):
+def product_list_filter(request: HttpRequest) -> JsonResponse:
+    """
+    Filter the products and return the rendered templates.
+    """
     context = base_product_list_filter(request)    
     page_obj = context["page_obj"]
     start_price = context["start_price"]
@@ -140,26 +151,106 @@ def product_list_filter(request: HttpRequest):
 
 class ProductDetailView(DetailView):
     template_name = "product/product_detail.html"
-    queryset = Product.enabled
+
+    def get_queryset(self):
+        """
+        Filter and return products based on user permissions.
+        """
+        user = self.request.user
+        return Product.access_controlled.filter_queryset_by_user_perms(user)
+
+    def get_comments_queryset(self):
+        """
+        Filter and return product comments based on user permissions.
+        """
+        user = self.request.user
+        comments = ProductComment.access_controlled.filter_queryset_by_user_perms(user)
+        product = self.get_object()
+        return comments.filter(product=product)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        """
+        Overwrite the get_context_data method to include comments list and
+        comment form.
+        """
         context = super().get_context_data(**kwargs)
-        context["comments"] = self.get_object().comments.filter(parent=None, is_enable=True).prefetch_related("childs")
+        comments = self.get_comments_queryset().filter(parent=None)
+
+        context["comments"] = comments
         context["form"] = kwargs.get("form", ProductCommentForm())
         return context
-    
+
     @method_decorator(login_required)
     def post(self, request: HttpRequest, slug):
         form = ProductCommentForm(request.POST)
         if form.is_valid():
+            # Create new comment instance without saving in database.
             comment = form.save(commit=False)
+            
+            # Fill up comment fields.
             comment.product = self.get_object()
             comment.user = request.user
             if parent_id := request.POST.get("parent_id"):
-                comment.parent = get_object_or_404(ProductComment.enabled, parent=None, id=parent_id)
+                comments = self.get_comments_queryset()
+                comment.parent = get_object_or_404(comments, parent=None, id=parent_id)
+            
+            # Save comment in database.
             comment.save()
-            messages.success(request, "کامنت شما با موفقیت ثبت شد")
+            
+            # Show success message to user.
+            messages.success(request, "نظر شما با موفقیت ثبت شد") 
+            
             form = ProductCommentForm()
         self.object = self.get_object()
         context = self.get_context_data(object=self.object, form=form)
         return render(request, self.template_name, context)
+
+
+@require_GET
+@superuser_required(error=HttpResponseForbidden())
+def remove_comment(request) -> JsonResponse:
+    # Find comment.
+    comments = ProductComment.objects.all()
+    comment_id = request.GET.get("comment_id")
+    comment = comments.filter(id=comment_id).first()
+    if comment is not None:
+        comment.delete()
+
+        # Find product comments.
+        product = comment.product
+        comments = comments.filter(product=product, parent=None)
+        context = {
+            "comments": comments.filter(parent=None)
+        }
+        comment_list_area = render_to_string("includes/comments.html", context, request)
+        data = {
+            "comment_list_area": comment_list_area
+        }
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"error": "نظری یافت نشد"})
+
+
+@require_GET
+@superuser_required(error=HttpResponseForbidden())
+def change_comment_status(request) -> JsonResponse:
+    # Find comment.
+    comment_id = request.GET.get("comment_id")
+    comment = ProductComment.objects.filter(id=comment_id).first()
+    if comment is not None:
+        # Change comment status.
+        if comment.is_enable:
+            comment.is_enable = False
+            current_status = "غیر فعال"
+        else:
+            comment.is_enable = True
+            current_status = "فعال"
+
+        # Save changes to database.
+        comment.save()
+        data = {
+            "current_status": current_status
+        }
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"error": "نظری یافت نشد"})

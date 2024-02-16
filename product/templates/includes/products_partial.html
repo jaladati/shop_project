@@ -5,9 +5,12 @@
             <div class="single-product">
                 <img class="img-fluid" src="{{ product.image.url }}">
                 <div class="product-details">
-                    <h6>{{ product.title | truncatewords:8 }}</h6>
+                    <h6>
+                        {{ product.title | truncatewords:8 }}
+                    </h6>
                     <div class="price">
                         {% include "includes/price_off.html" with product=product %}
+                        {% if not product.is_enable %}(غیر فعال){% endif %}
                     </div>
                     <div class="prd-bottom">
 

@@ -5969,6 +5969,7 @@ label {
 }
 
 .review_item .media .media-body .reply_btn:hover {
+  cursor: pointer;
   background: #ffba00;
   border-color: #ffba00;
   color: #fff;
@@ -8077,9 +8078,9 @@ label {
 }
 
 .contact_form .form-group .form-control {
-  font-size: 13px;
+  font-size: 15px;
   line-height: 26px;
-  color: #999;
+  color: #666;
   border: 1px solid #eeeeee;
   font-family: "Roboto", sans-serif;
   border-radius: 0px;
