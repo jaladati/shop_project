@@ -48,10 +48,8 @@ class RegisterView(View):
 
             send_email("فعال سازی حساب کاربری", user.email,
                        {"email_activate_code":user.email_activate_code}, "emails/register_account.html")
-            
             user.last_login = datetime.datetime.now(datetime.timezone.utc)
             user.save()
-            
             context["form"] = RegisterForm()
             context["create_account_alert"] = "true"
 
@@ -98,7 +96,6 @@ class LoginView(View):
                     form.add_error("email", "این حساب هنوز فعال نشده است.")
             else:
                 form.add_error("email", "کاربری با این مشخصات یافت نشد.")
-        
         context = {
             "form": form
         }
@@ -127,7 +124,7 @@ class ForgetPasswordView(View):
             user = User.objects.filter(email=cd["email"]).first()
             if user is not None:
                 send_email("فراموشی کلمه عبور", user.email,
-                       {"activate_code":user.email_activate_code}, "emails/forget_password.html")
+                           {"activate_code":user.email_activate_code}, "emails/forget_password.html")
                 user.last_login = datetime.datetime.now(datetime.timezone.utc)
                 user.save()
                 context["email_alert"] = "true"
@@ -140,7 +137,6 @@ class ForgetPasswordView(View):
 class ResetPasswordView(View):
     def get(self, request, activate_code):
         user = User.objects.filter(email_activate_code=activate_code).first()
-        
         if user is not None:
             now = datetime.datetime.now(datetime.timezone.utc)
             time_difference: datetime.timedelta = now - user.last_login

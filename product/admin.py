@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import *
 
+
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     exclude = ['slug']
@@ -11,7 +12,7 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['title']
 
 
-class ProductGalleryInLine(admin.StackedInline):
+class ProductGalleryInline(admin.TabularInline):
     model = ProductGallery
 
 
@@ -30,12 +31,24 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ['category']
     raw_id_fields = ['category']
     inlines = [
-        ProductGalleryInLine,
+        ProductGalleryInline,
         ProductColorVariantInline,
     ]
 
     def short_title(self, obj):
         return F"{obj.title[:15]}..."
+
+
+@admin.register(ProductColorVariant)
+class ProductColorVariantAdmin(admin.ModelAdmin):
+    list_display = ("short_product_name", "price", "off", "color_name", "stock_count")
+    list_editable = ("price", "off", "stock_count")
+    list_filter = ("product",)
+    search_fields = ["product", "color_name"]
+    raw_id_fields = ("product",)
+
+    def short_product_name(self, obj):
+        return F"{obj.product.title[:15]}..."
 
 
 @admin.register(ProductComment)
