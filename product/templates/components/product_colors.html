@@ -1,0 +1,26 @@
+{% load poll_extras %}
+
+{% for color in colors %}
+    {% if color.stock_count %}
+        {% with color_price=color.price id=color.id%}
+        <a class="color-icon" id="color-icon-{{id}}" title="{{color.color_name}}"
+            onclick="
+            changeProductColor(
+                colorId = 'color-icon-{{id}}', 
+                colorName = '{{color.color_name}}',
+                productStock = {{color.stock_count}},
+                productPrice = {% if color_price %}{{color_price}}{% else %}{{color.product.price}}{% endif %},
+                productFinalPrice = {{color.final_price}},
+                cartItemQuantity = {% get_cart_item_quantity color request.user %},
+                addProductToCartFunc = `{% if request.user.is_authenticated %}addProductToCart({{id}}){% else %}loginRequiredAlert('{% url 'account:login' %}'){% endif %}`
+            )
+            "
+            style="
+            background: {{ color.color_hex_code }};
+            {% if forloop.first %}
+                border-color: blue
+            {% endif %}
+            "></a>
+        {% endwith %}
+    {% endif %}
+{% endfor %}

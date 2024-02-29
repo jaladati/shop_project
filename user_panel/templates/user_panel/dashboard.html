@@ -9,7 +9,7 @@
 {% if messages %}
     <script type="text/javascript">
         {% for message in messages %}
-            showSuccessAlert('{{message}}', 'center', true)
+            showAlert('{{message}}', '{{message.level_tag}}', 'center', true)
         {% endfor %}
     </script>
 {% endif %}

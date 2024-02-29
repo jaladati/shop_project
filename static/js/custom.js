@@ -36,6 +36,12 @@ function deleteParameterWithOutReload(name) {
     window.history.pushState("", "", url);
 };
 
+
+function separate(number) {
+    return (number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
+
 function setProductFilter(data) {
     for (let key in data) {
         setParameterWithOutReload(key, data[key])
@@ -67,56 +73,6 @@ function setProductFilter(data) {
     });
 };
 
-function replyComment(parentId, userName) {
-    document.getElementById("parentId").value = parentId;
-    document.getElementById("myTab").scrollIntoView({ behavior: "smooth" });
-    var comment = document.getElementById("commentText");
-    comment.focus();
-    comment.placeholder = `پاسخ برای نظر ${userName}`
-};
-
-function setStockMessage(stockCount) {
-    var message;
-    if (stockCount > 5) {
-        message = "موجود است";
-    } else if (stockCount > 0) {
-        message = `تنها ${stockCount} عدد در انبار موجود است`;
-    } else {
-        message = "ناموجود";
-    };
-    document.getElementById("in-stock").innerHTML = `<span>موجودی</span> : ${message}`;
-};
-
-
-function separate(number) {
-    return (number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
-
-
-function setProductPrice(price, finalPrice) {
-    var message;
-    if (price != finalPrice) {
-        message = `<h2>\$${separate(finalPrice)}</h2>
-        <h4 style="text-decoration: line-through;color:#ddddcc">\$${separate(price)}</h4>`;
-    } else {
-        message = `<h2>\$${separate(price)}</h2>`;
-    }
-    document.getElementById("product-price-area").innerHTML = message
-};
-
-
-function setProductColor(colorId, colorName, productStock, productPrice, productFinalPrice) {
-    var a = document.getElementsByClassName('color-icon-area')[0].getElementsByTagName('a')
-    for (var i = 0; i < a.length; i++) {
-        a[i].style.borderColor = "gainsboro"
-    }
-    document.getElementById(colorId).style.borderColor = "blue";
-    document.getElementById("color-name").innerText = "رنگ: " + colorName;
-    setStockMessage(productStock);
-    setProductPrice(productPrice, productFinalPrice);
-};
-
-
 function productInStockFilter() {
     var isChecked = document.getElementById("toggle-switch-checkbox").checked;
     if (isChecked) {
@@ -126,44 +82,13 @@ function productInStockFilter() {
     };
 };
 
-
-function logoutAlert(logoutUrl) {
-    Swal.fire({
-        title: "مطمئنی؟",
-        icon: "warning",
-        showCancelButton: true,
-        focusCancel: true,
-        confirmButtonText: "خروج",
-        cancelButtonText: "متوقف کردن",
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.assign(logoutUrl);
-        };
-    });
+function replyComment(parentId, userName) {
+    document.getElementById("parentId").value = parentId;
+    document.getElementById("myTab").scrollIntoView({ behavior: "smooth" });
+    var comment = document.getElementById("commentText");
+    comment.focus();
+    comment.placeholder = `پاسخ برای نظر ${userName}`
 };
-
-
-function showSuccessAlert(message, position, onload) {
-    function show() {
-        Swal.fire({
-            position: position,
-            icon: "success",
-            title: message,
-            showConfirmButton: false,
-            timer: 1500
-        });
-    };
-    if (onload === true) {
-        window.onload = function () {
-            show()
-        };
-    } else {
-        show()
-    };
-};
-
 
 function removeComment(commentId) {
     Swal.fire({
@@ -191,13 +116,12 @@ function removeComment(commentId) {
                 } else {
                     commentListArea = res["comment_list_area"];
                     $("#comment-list-area").html(commentListArea);
-                    showSuccessAlert("نظر با موفقیت حذف شد", "top-end");
+                    showAlert("نظر با موفقیت حذف شد", "success", "top-end")
                 };
             });
         };
     });
 };
-
 
 function changeCommentStatus(commentId) {
     $.get("/products/change-comment-status", {
@@ -215,7 +139,120 @@ function changeCommentStatus(commentId) {
         } else {
             var currentStatus = res["current_status"];
             $(`#comment-${commentId}-status`).html(currentStatus);
-            showSuccessAlert(`وضعیت نظر به ${currentStatus} تغییر یافت`, "top-end");
+            showAlert(`وضعیت نظر به ${currentStatus} تغییر یافت`, "success", "top-end")
         };
     });
+};
+
+function setStockMessage(stockCount) {
+    var message;
+    if (stockCount > 5) {
+        message = "موجود است";
+    } else if (stockCount > 0) {
+        message = `تنها ${stockCount} عدد در انبار موجود است`;
+    } else {
+        message = "ناموجود";
+    };
+    document.getElementById("in-stock").innerHTML = `<span>موجودی</span> : ${message}`;
+};
+
+function setProductPrice(price, finalPrice) {
+    var message;
+    if (price != finalPrice) {
+        message = `<h2>\$${separate(finalPrice)}</h2>
+        <h4 style="text-decoration: line-through;color:#ddddcc">\$${separate(price)}</h4>`;
+    } else {
+        message = `<h2>\$${separate(price)}</h2>`;
+    }
+    document.getElementById("product-price-area").innerHTML = message
+};
+
+function changeProductColor(colorId, colorName, productStock,
+    productPrice, productFinalPrice,
+    cartItemQuantity, addProductToCartFunc) {
+    var colors = document.getElementsByClassName('color-icon-area')[0].getElementsByTagName('a');
+    for (var i = 0; i < colors.length; i++) {
+        colors[i].style.borderColor = "gainsboro"
+    };
+    document.getElementById(colorId).style.borderColor = "blue";
+    document.getElementById("color-name").innerText = "رنگ: " + colorName;
+    setStockMessage(productStock);
+    setProductPrice(productPrice, productFinalPrice);
+    document.getElementById("sst").value = cartItemQuantity;
+    document.getElementById("increaseProductQuantityButton").setAttribute("onclick", `increaseProductQuantity(${productStock})`);
+    document.getElementById("addToCartButton").setAttribute("onclick", addProductToCartFunc);
+};
+
+function loginRequiredAlert(loginUrl) {
+    Swal.fire({
+        title: "برای این کار ابتدا می بایست وارد شوید",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "ورود",
+        cancelButtonText: "نه ممنون",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.assign(loginUrl);
+        };
+    });
+};
+
+function logoutAlert(logoutUrl) {
+    Swal.fire({
+        title: "مطمئنی؟",
+        icon: "warning",
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "خروج",
+        cancelButtonText: "متوقف کردن",
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.assign(logoutUrl);
+        };
+    });
+};
+
+function showAlert(message, icon, position, onload) {
+    function show() {
+        var res = Swal.fire({
+            position: position,
+            icon: icon,
+            title: message,
+            showConfirmButton: false,
+            timer: 1500
+        });
+        return res
+    };
+    if (onload === true) {
+        window.onload = function () {
+            return show()
+        };
+    };
+    return show()
+};
+
+function addProductToCart(productId) {
+    quantity = $("#sst").val()
+    $.get("/cart/add-product-to-cart", {
+        id: productId,
+        quantity: quantity
+    }).then(res => {
+        showAlert(res["text"], res["icon"], res["position"]);
+        $("#product-colors-area").html(res["product_colors_area"]);
+        var a = document.getElementsByClassName('color-icon-area')[0].getElementsByTagName('a');
+        a[0].style.borderColor = "gainsboro";
+        $("#color-icon-" + productId).css("borderColor", "blue");
+    });
+};
+
+function increaseProductQuantity(maxVal) {
+    var result = document.getElementById('sst');
+    var sst = result.value;
+    if (!isNaN(sst) && sst < maxVal) {
+        result.value++;
+    };
 };

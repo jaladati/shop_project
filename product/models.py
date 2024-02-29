@@ -31,8 +31,7 @@ class AccessControlledObjectManager(models.Manager):
             return self.model.enabled.all()
 
 
-
-#models
+# models
 class Category(models.Model):
     title = models.CharField(max_length=255, verbose_name="عنوان")
     is_enable = models.BooleanField(default=True, verbose_name="فعال")
@@ -60,9 +59,9 @@ class Category(models.Model):
             if sub_category.childs.all():
                 products.extend(sub_category.get_products())
             else:
-                products.extend(sub_category.products.all())        
+                products.extend(sub_category.products.all())
         return products
-    
+
     def get_enable_childs(self) -> list:
         """
         Return all of subcategories that are enable.
@@ -88,7 +87,8 @@ class Product(models.Model):
     off = models.DecimalField(
         max_digits=5, decimal_places=1, default=0, validators=[MaxValueValidator(100.0), MinValueValidator(0.0)], verbose_name="تخفیف")
 
-    specification = models.JSONField(default=dict, blank=True, null=True, verbose_name="مشخصات")
+    specification = models.JSONField(
+        default=dict, blank=True, null=True, verbose_name="مشخصات")
 
     created_time = jmodels.jDateTimeField(
         auto_now_add=True, verbose_name="تاریخ ایجاد")
@@ -98,7 +98,8 @@ class Product(models.Model):
     category = models.ForeignKey(to=Category, null=True, blank=True,
                                  on_delete=models.SET_NULL, related_name="products", verbose_name="دسته بندی")
 
-    short_description = models.CharField(max_length=350, verbose_name="توضیحات کوتاه")
+    short_description = models.CharField(
+        max_length=350, verbose_name="توضیحات کوتاه")
     description = models.TextField(verbose_name="توضیحات کامل")
 
     image = models.ImageField(
@@ -124,9 +125,9 @@ class Product(models.Model):
             super().save(*args, **kwargs)
             self.slug = slugify(F"{self.title}-{self.pk}", allow_unicode=True)
         return super().save(*args, **kwargs)
-    
+
     def get_absolute_url(self):
-        return reverse("product:detail", kwargs={'slug':self.slug})
+        return reverse("product:detail", kwargs={'slug': self.slug})
 
     def in_stock_color_variants(self):
         return self.color_variants.filter(stock_count__gt=0)
@@ -158,7 +159,8 @@ class ProductColorVariant(models.Model):
     product = models.ForeignKey(to=Product, on_delete=models.CASCADE,
                                 related_name="color_variants", verbose_name="محصول")
 
-    price = models.PositiveBigIntegerField(null=True, blank=True, verbose_name="قیمت")
+    price = models.PositiveBigIntegerField(
+        null=True, blank=True, verbose_name="قیمت")
     off = models.DecimalField(
         max_digits=5, decimal_places=1, default=0, validators=[MaxValueValidator(100.0), MinValueValidator(0.0)], verbose_name="تخفیف")
 

@@ -10,7 +10,7 @@
 {% if messages %}
     <script type="text/javascript">
         {% for message in messages %}
-            showSuccessAlert('{{message}}', 'top-end', true)
+            showAlert('{{message}}', '{{message.level_tag}}','top-end', true)
         {% endfor %}
     </script>
 {% endif %}
@@ -80,29 +80,35 @@
                     <p>{{ product.short_description }}</p>
                     {% if colors.first.color_name != '_' and product.stock_count %}
                         <h6 id="color-name">رنگ: {{ colors.first.color_name }}</h6>
-                        <div class="color-icon-area">
-                            {% for color in colors %}
-                                {% if color.stock_count %}
-                                    {% with color_price=color.price %}
-                                    <a class="color-icon" id="color-icon-{{color.color_hex_code}}" title="{{color.color_name}}"
-                                      onclick="setProductColor('color-icon-{{color.color_hex_code}}', '{{color.color_name}}', {{color.stock_count}}, {% if color_price %}{{color_price}}{% else %}{{product.price}}{% endif %}, {{color.final_price}})"
-                                      style="
-                                        background: {{ color.color_hex_code }};
-                                        {% if forloop.first %}
-                                            border-color: blue
-                                        {% endif %}
-                                        "></a>
-                                    {% endwith %}
-                                {% endif %}
-                            {% endfor %}
+                        <div class="color-icon-area" id="product-colors-area">
+                            {% include "components/product_colors.html" %}
                         </div>
                     {% endif %}
-                    {% endwith %}
-
+                    
+                    <div class="product_count" id="product-quantity">
+                        <label for="qty">تعداد: </label>
+                        <input type="text" name="qty" id="sst" maxlength="12" value="{% get_cart_item_quantity colors.first request.user %}" title="Quantity:" class="input-text qty">
+                        <button onclick="increaseProductQuantity({{colors.first.stock_count}})"
+                                class="increase items-count" type="button" id="increaseProductQuantityButton">
+                            <i class="lnr lnr-chevron-up"></i>
+                        </button>
+                        <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
+                                class="reduced items-count" type="button">
+                            <i class="lnr lnr-chevron-down"></i>
+                        </button>
+                    </div>
                     <div class="card_area d-flex align-items-center">
-                        <a class="primary-btn" href="#">افزودن به سبد خرید</a>
+                        <a class="primary-btn" id="addToCartButton" onclick=
+                            "
+                                {% if request.user.is_authenticated %}
+                                    addProductToCart({{colors.first.id}})
+                                {% else %}
+                                    loginRequiredAlert('{% url "account:login" %}')
+                                {% endif %}
+                            ">افزودن به سبد خرید</a>
                         <a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
                     </div>
+                    {% endwith %}
                 </div>
             </div>
         </div>
