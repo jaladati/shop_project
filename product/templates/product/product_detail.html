@@ -88,7 +88,7 @@
                     <div class="product_count" id="product-quantity">
                         <label for="qty">تعداد: </label>
                         <input type="text" name="qty" id="sst" maxlength="12" value="{% get_cart_item_quantity colors.first request.user %}" title="Quantity:" class="input-text qty">
-                        <button onclick="increaseProductQuantity({{colors.first.stock_count}})"
+                        <button onclick="increaseProductQuantity('sst', {{colors.first.stock_count}})"
                                 class="increase items-count" type="button" id="increaseProductQuantityButton">
                             <i class="lnr lnr-chevron-up"></i>
                         </button>

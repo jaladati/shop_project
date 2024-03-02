@@ -170,18 +170,29 @@ class ProductColorVariant(models.Model):
         samples=COLOR_PALETTE, verbose_name="کد hex رنگ")
     stock_count = models.PositiveBigIntegerField(verbose_name="تعداد موجودی")
 
-    class Meta:
-        verbose_name = "رنگ"
-        verbose_name_plural = "رنگ ها"
+    @property
+    def get_price(self):
+        return self.price or self.product.price
+
+    @property
+    def get_off(self):
+        return self.off or self.product.off
+
+    @property
+    def final_price(self):
+        price = self.get_price
+        off = self.get_off
+        return int(price - price * off / 100)
+
+    def get_absolute_url(self):
+        return self.product.get_absolute_url()
 
     def __str__(self) -> str:
         return F"{self.color_name}-{self.stock_count}"
 
-    @property
-    def final_price(self):
-        price = self.price or self.product.price
-        off = self.off or self.product.off
-        return int(price - price * off / 100)
+    class Meta:
+        verbose_name = "رنگ"
+        verbose_name_plural = "رنگ ها"
 
 
 class ProductGallery(models.Model):

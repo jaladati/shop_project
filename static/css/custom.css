@@ -48,3 +48,32 @@
     border-color: #ffb300;
     color: #fff;
 }
+
+.ui-w-40 {
+    width: 150px !important;
+    height: auto;
+}
+
+.ui-product-color {
+    display: inline-block;
+    overflow: hidden;
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 10rem;
+    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset;
+    vertical-align: middle;
+}
+
+.cart-area .cart-items .cart-item .price h6 {
+    font-size: 14px;
+    display: inline-block;
+    padding-right: 15px;
+    margin: 0;
+}
+  
+.cart-area .cart-items .cart-item .price .l-through {
+    text-decoration: line-through;
+    color: #cccccc;
+    margin-bottom: 0;
+}

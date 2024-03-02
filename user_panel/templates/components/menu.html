@@ -12,6 +12,10 @@
         class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'change_password' %}active custom-color{% endif %}">
         تغییر کلمه عبور
     </a>
+    <a href="{% url 'user_panel:cart' %}"
+        class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'cart' %}active custom-color{% endif %}">
+        سبد خرید
+    </a>
 </div>
 <div class="card">
     <img class="card-img-bottom" src="{{ user.avatar.url }}">

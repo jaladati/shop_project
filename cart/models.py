@@ -20,8 +20,22 @@ class Cart(models.Model):
 
     def total_price(self) -> int:
         """
-        Calculates the total price of cart items based on their paid or current price,
-        depending on the payment status.
+        Calculates the total price of cart items based on their paid price or 
+        current price, depending on the payment status.
+        """
+        total = 0
+        if self.is_paid:
+            for item in self.items.all():
+                total += item.paid_price * item.quantity
+        else:
+            for item in self.items.all():
+                total += item.product.get_price * item.quantity
+        return total
+
+    def total_discounted_price(self) -> int:
+        """
+        Calculates the total price of cart items based on their paid price or 
+        current discounted price, depending on the payment status.
         """
         total = 0
         if self.is_paid:
@@ -31,6 +45,9 @@ class Cart(models.Model):
             for item in self.items.all():
                 total += item.product.final_price * item.quantity
         return total
+
+    def total_discounted(self):
+        return self.total_price() - self.total_discounted_price()
 
     def __str__(self) -> str:
         return F"{self.user}-cart-{self.pk}"

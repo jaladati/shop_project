@@ -11,15 +11,14 @@ from .models import Cart, CartItem
 @login_required
 def add_product_to_cart(request):
     # Get id and quantity.
-    id = request.GET.get("id")
-    quantity = request.GET.get("quantity", 1)
-
-    # Are id and quantity integers?
-    if not id.isdigit() or not quantity.isdigit():
+    try:
+        id = int(request.GET.get("id"))
+        quantity = int(request.GET.get("quantity", 1))
+    # If id or quantity is not numeric return error.
+    except:
         response = {"text": "مقداری نامعتبر وارد شده است",
                     "icon": "error", "position": "center"}
         return JsonResponse(response)
-    quantity = int(quantity)
 
     # Find product.
     product = ProductColorVariant.objects.filter(
@@ -47,14 +46,18 @@ def add_product_to_cart(request):
 
     if created:
         response = {"text": "محصول با موفقیت به سبد خرید شما افزوده شد",
-                    "icon": "success", "position": "top-end"}
+                    "icon": "success", "position": "center"}
     else:
         # Save the changes.
         cart_item.quantity = quantity
         cart_item.save()
 
         response = {"text": "تعداد محصول در سبد خرید با موفقیت تغییر یافت",
-                    "icon": "success", "position": "top-end"}
+                    "icon": "success", "position": "center",
+                    "cart_item_total_price": cart_item.total_price(),
+                    "cart_total_discounted_price": cart.total_discounted_price(),
+                    "cart_total_discounted": cart.total_discounted(),
+                    "cart_total_price": cart.total_price()}
 
     # Render the product colors area for update the item quantities.
     colors = product.product.in_stock_color_variants()
@@ -62,4 +65,30 @@ def add_product_to_cart(request):
         "components/product_colors.html", {"colors": colors}, request)
     response["product_colors_area"] = product_colors_area
 
+    return JsonResponse(response)
+
+
+@require_GET
+@login_required
+def remove_product_from_cart(request):
+    # Get cart item.
+    user = request.user
+    item_id = request.GET.get("item_id")
+    cart_item = CartItem.objects.filter(
+        cart__is_paid=False, cart__user_id=user.id, id=item_id).first()
+
+    # Remove item if exists.
+    if cart_item is not None:
+        cart_item.delete()
+        cart = cart_item.cart
+        response = {"text": "محصول با موفقیت از سبد خرید حذف شد",
+                    "icon": "success", "position": "center",
+                    "cart_total_discounted_price": cart.total_discounted_price(),
+                    "cart_total_discounted": cart.total_discounted(),
+                    "cart_total_price": cart.total_price()}
+        return JsonResponse(response)
+
+    # Return error.
+    response = {"text": "محصول یافت نشد",
+                "icon": "error", "position": "center"}
     return JsonResponse(response)

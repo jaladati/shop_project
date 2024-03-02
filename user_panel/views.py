@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 
 from account import models
+from cart.models import Cart
 from . import forms
 
 
@@ -58,3 +59,15 @@ def change_password(request):
                 form.add_error("current_password", "گذرواژه نادرست است.")
 
         return render(request, "user_panel/change_password.html", context)
+
+
+@login_required
+def cart(request):
+    if request.method == "GET":
+        user = request.user
+        cart, _ = Cart.objects.prefetch_related("items").get_or_create(user=user, is_paid=False)
+        
+        context = {
+            "cart": cart
+        }
+        return render(request, "user_panel/cart.html", context)

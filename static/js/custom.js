@@ -179,7 +179,7 @@ function changeProductColor(colorId, colorName, productStock,
     setStockMessage(productStock);
     setProductPrice(productPrice, productFinalPrice);
     document.getElementById("sst").value = cartItemQuantity;
-    document.getElementById("increaseProductQuantityButton").setAttribute("onclick", `increaseProductQuantity(${productStock})`);
+    document.getElementById("increaseProductQuantityButton").setAttribute("onclick", `increaseProductQuantity('sst', ${productStock})`);
     document.getElementById("addToCartButton").setAttribute("onclick", addProductToCartFunc);
 };
 
@@ -235,6 +235,28 @@ function showAlert(message, icon, position, onload) {
     return show()
 };
 
+async function addProductToCartAlert(colors) {
+    const inputOptions = new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(colors);
+        }, 1000);
+      });
+    const { value: productId } = await Swal.fire({
+        title: "رنگ محصول را انتخاب کنید",
+        input: "radio",
+        confirmButtonText: "تایید",
+        inputOptions,
+        inputValidator: (value) => {
+            if (!value) {
+                return "باید یک رنگ را انتخاب کنید";
+            };
+        }
+    });
+    if (productId) {
+        addProductToCart(productId);
+    };
+};
+
 function addProductToCart(productId) {
     quantity = $("#sst").val()
     $.get("/cart/add-product-to-cart", {
@@ -249,8 +271,38 @@ function addProductToCart(productId) {
     });
 };
 
-function increaseProductQuantity(maxVal) {
-    var result = document.getElementById('sst');
+function removeProductFromCart(itemId) {
+    $.get("/cart/remove-product-from-cart", {
+        item_id: itemId
+    }).then(res => {
+        if (res["icon"] == "success") {
+            $(`#cart-item-area-${itemId}`).remove()
+        };
+        showAlert(res["text"], res["icon"], res["position"]);
+        $("#cart-total-discounted-price").html(separate(res["cart_total_discounted_price"]))
+        $("#cart-total-discounted").html(separate(res["cart_total_discounted"]))
+        $("#cart-total-price").html(separate(res["cart_total_price"]))
+    })
+};
+
+function changeCartItemQuantity(productId, itemId, quantity) {
+    $.get("/cart/add-product-to-cart", {
+        id: productId,
+        quantity: quantity
+    }).then(res => {
+        if (res["icon"] == "error") {
+            showAlert(res["text"], res["icon"], res["position"]);
+        } else {
+            $(`#cart-item-total-price-${itemId}`).html(separate(res["cart_item_total_price"]))
+            $("#cart-total-discounted-price").html(separate(res["cart_total_discounted_price"]))
+            $("#cart-total-discounted").html(separate(res["cart_total_discounted"]))
+            $("#cart-total-price").html(separate(res["cart_total_price"]))
+        };
+    });
+};
+
+function increaseProductQuantity(inputId, maxVal) {
+    var result = document.getElementById(inputId);
     var sst = result.value;
     if (!isNaN(sst) && sst < maxVal) {
         result.value++;

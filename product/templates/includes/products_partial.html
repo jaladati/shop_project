@@ -3,21 +3,37 @@
     {% for product in products %}
         <div class="{% if class %}{{class}}{% else %}col-lg-4 col-md-6{% endif %}">
             <div class="single-product">
-                <img class="img-fluid" src="{{ product.image.url }}">
+                <a href="{{ product.get_absolute_url }}" class="social-info">
+                    <img class="img-fluid" src="{{ product.image.url }}">
+                </a>
                 <div class="product-details">
-                    <h6>
-                        {{ product.title | truncatewords:8 }}
-                    </h6>
+                    <a href="{{ product.get_absolute_url }}" class="social-info">
+                        <h6>
+                            {{ product.title | truncatewords:8 }}
+                        </h6>
+                    </a>
                     <div class="price">
                         {% include "includes/price_off.html" with product=product %}
                         {% if not product.is_enable %}(غیر فعال){% endif %}
                     </div>
                     <div class="prd-bottom">
-
-                        <a href="" class="social-info">
-                            <span class="ti-bag"></span>
-                            <p class="hover-text">اضافه به سبد</p>
-                        </a>
+                        {% with product_colors=product.in_stock_color_variants %}
+                            <a class="social-info" 
+                                onclick="
+                                {% if product_colors.first.color_name == '_' %}
+                                    addProductToCart({{product_colors.first.id}})
+                                {% else %}
+                                    addProductToCartAlert({
+                                        {% for product_color in product_colors %}
+                                            {{product_color.id}}: '{{product_color.color_name}}',
+                                        {% endfor %}
+                                    })
+                                {% endif %}
+                            ">
+                                <span class="ti-bag"></span>
+                                <p class="hover-text">اضافه به سبد</p>
+                            </a>
+                        {% endwith %}
                         <a href="" class="social-info">
                             <span class="lnr lnr-heart"></span>
                             <p class="hover-text">لیست آرزو</p>
@@ -25,10 +41,6 @@
                         <a href="" class="social-info">
                             <span class="lnr lnr-sync"></span>
                             <p class="hover-text">مقایسه</p>
-                        </a>
-                        <a href="{{ product.get_absolute_url }}" class="social-info">
-                            <span class="lnr lnr-move"></span>
-                            <p class="hover-text">جزئیات کالا</p>
                         </a>
                     </div>
                 </div>

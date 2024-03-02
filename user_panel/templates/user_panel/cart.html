@@ -1,0 +1,185 @@
+{% extends "shared/base.html" %}
+
+{% load static poll_extras %}
+
+{% block title %}
+سبد خرید
+{% endblock %}
+
+{% block content %}
+
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>سبد خرید</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="{% url 'home:index' %}">خانه<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'user_panel:dashboard' %}">داشبورد<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'user_panel:cart' %}">سبد خرید</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Banner Area -->
+
+<!--================Cart Area =================-->
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-2 my-5">
+            {% include "components/menu.html" %}
+        </div>
+        <div class="col-md-7 cart-area">
+            <div class="container px-3 my-5 clearfix">
+                <!-- Shopping cart table -->
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered m-0">
+                            <thead>
+                                <tr>
+                                    <!-- Set columns width -->
+                                    <th class="text-center align-middle py-3 px-0" style="width: 45px;">حذف؟</th>
+                                    <th class="text-center py-3 px-4" style="width: 100px;">مجموع</th>
+                                    <th class="text-center py-3 px-4" style="width: 120px;">تعداد</th>
+                                    <th class="text-center py-3 px-4" style="width: 100px;">قیمت</th>
+                                    <th class="text-center py-3 px-4" style="min-width: 400px;">محصول</th>
+                                </tr>
+                            </thead>
+                            <tbody class="cart-items">
+                                {% for item in cart.items.all %}
+                                    {% with product=item.product %}
+                                        <tr class="cart-item" id="cart-item-area-{{item.id}}">
+                                            <!-- Delete Area -->
+                                            <td class="text-center align-middle px-0">
+                                                <a onclick="removeProductFromCart({{item.id}})"
+                                                    class="shop-tooltip close float-none text-danger" title=""
+                                                    data-original-title="Remove">
+                                                    ×
+                                                </a>
+                                            </td>
+                                            <!-- Total Price Area -->
+                                            <td class="text-right font-weight-semibold align-middle p-4">
+                                                <h6 id="cart-item-total-price-{{item.id}}">
+                                                    {{item.total_price|separate}}
+                                                </h6>
+                                            </td>
+                                            <!-- Quantity Area -->
+                                            <td class="align-middle p-4">
+                                                <div class="input-group quantity mx-auto" style="width: 100px;">
+                                                    <div class="input-group-btn">
+                                                        <button id="reduced-btn-{{item.id}}" class="btn btn-sm btn-warning" 
+                                                            {% if item.quantity == 1 %}disabled="true"{% endif %}
+                                                            onclick="
+                                                                var result = document.getElementById('item-quantity-{{item.id}}');
+                                                                var sst = result.value;
+                                                                if( !isNaN( sst ) &amp;&amp; sst > 1 ) result.value--;
+                                                                if( result.value == 1 ) document.getElementById('reduced-btn-{{item.id}}').disabled = true;
+                                                                changeCartItemQuantity({{product.id}}, {{item.id}}, result.value);
+                                                                return false;">
+                                                            <i class="fa fa-minus"></i>
+                                                        </button>
+                                                    </div>
+                                                    <input type="text" id="item-quantity-{{item.id}}"
+                                                        class="form-control form-control-sm text-center"
+                                                        value="{{item.quantity}}">
+                                                    <div class="input-group-btn">
+                                                        <button class="btn btn-sm btn-warning" onclick="
+                                                                increaseProductQuantity('item-quantity-{{item.id}}', {{item.product.stock_count}});
+                                                                var sst = document.getElementById('item-quantity-{{item.id}}').value;
+                                                                var reducedBtn = document.getElementById('reduced-btn-{{item.id}}');
+                                                                if( sst > 1 ) reducedBtn.disabled = false;
+                                                                changeCartItemQuantity({{product.id}}, {{item.id}}, sst);
+                                                                ">
+                                                            <i class="fa fa-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <!-- Price Area -->
+                                            <td class="text-right font-weight-semibold align-middle p-4 price">
+                                                {% if product.final_price != product.get_price %}
+                                                    <h6>${{product.final_price|separate}}</h6>
+                                                    <h6 class="l-through">${{product.get_price|separate}}</h6>
+                                                {% else %}
+                                                    <h6>${{product.get_price|separate}}</h6>
+                                                {% endif %}
+                                            </td>
+                                            <!-- Product Area -->
+                                            <td class="p-4">
+                                                <div class="media align-items-center">
+                                                    <div class="media-body text-right" dir="rtl">
+                                                        <a href="{{product.get_absolute_url}}" class="d-block text-dark">
+                                                            {{product.product.title}}
+                                                        </a>
+                                                        <small>
+                                                            <span class="font-weight-bold">رنگ:</span>
+                                                            <span class="ui-product-color ui-product-color-sm align-text-bottom"
+                                                                title="{{product.color_name}}"
+                                                                style="background:{{product.color_hex_code}};"></span> &nbsp;
+                                                        </small>
+                                                    </div>
+                                                    <img src="{{ product.product.image.url }}"
+                                                        class="d-block ui-w-40 ui-bordered mr-4" alt="">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endwith %}
+                                {% empty %}
+                                    <td colspan="5">
+                                        <div class="alert alert-warning text-center" role="alert">
+                                            <h4>
+                                                هنوز محصولی اضافه نکردی.
+                                                <a href="{% url 'product:list' %}">بریم اضافه کنیم</a>
+                                            </h4>
+                                        </div>
+                                    </td>
+                                {% endfor %}
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- / Shopping cart table -->
+                    <div class="pb-4" dir="rtl">
+                        <div class="col-md-7 text-center justify-content-center d-flex pb-4 border">
+                            <div class="mt-4 mr-5">
+                                <strong>قیمت اولیه</strong>
+                                <div class="text-large">
+                                    <strong id="cart-total-price">{{cart.total_price|separate}}</strong>
+                                </div>
+                            </div>
+                            <div class="mt-4 mr-5">
+                                <strong>تخفیف</strong>
+                                <div class="text-large">
+                                    <strong id="cart-total-discounted">{{cart.total_discounted|separate}}</strong>
+                                </div>
+                            </div>
+                            <div class="mt-4 mr-5">
+                                <strong>قیمت بعد از تخفیف</strong>
+                                <div class="text-large">
+                                    <strong id="cart-total-discounted-price">{{cart.total_discounted_price|separate}}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="float-right">
+                        <a href="{% url 'product:list' %}">
+                            <button type="button" class="btn btn-lg btn-default md-btn-flat mt-2 mr-3">
+                                برگردیم به صفحه محصولات
+                            </button>
+                        </a>
+                        <button type="button" class="btn btn-lg btn-primary mt-2">
+                            تکمیل فرایند خرید
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--================End Cart Area =================-->
+
+{% endblock %}
