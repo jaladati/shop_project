@@ -39,12 +39,10 @@ def base_product_list_filter(request: HttpRequest) -> dict[str, Any]:
         case "newest" | _:
             ordering = "-created_time"
     # Find categories based on user permissions.
-    is_superuser = request.user.is_superuser
-    if is_superuser:
-        db_categories = Category.objects.all()
-    else:
-        db_categories = Category.enabled.all()
-    
+    user = request.user
+    db_categories = Category.access_controlled.filter_queryset_by_user_perms(
+        user)
+
     category = request.GET.get("category")
 
     if category:
@@ -57,20 +55,24 @@ def base_product_list_filter(request: HttpRequest) -> dict[str, Any]:
             else:
                 break
         products = categories[-1].get_products()
-        if not is_superuser:
-            products = list(filter(lambda product: product.is_enable, products))
-        products = sorted(products, key=attrgetter(ordering.replace("-","")))
-        if "-" in ordering:
-            products.reverse()
+        if not user.is_superuser:
+            products = products.filter(is_enable=True)
+
+        products = products.order_by(ordering)
     else:
-        if is_superuser:
-            products = Product.objects.order_by(ordering)
-        else:
-            products = Product.enabled.order_by(ordering)
+        products = Product.access_controlled.filter_queryset_by_user_perms(
+            user).order_by(ordering)
         categories = db_categories.filter(parent=None)
-    
+
+    # Search on products.
+    q = request.GET.get("q", "")
+    products = products.filter(title__contains=q)
+
+    # Check the product queryset is empty or no.
     if products:
-        db_max_price = sorted(products, key=lambda product: product.final_price, reverse=True)[0].final_price
+        # Get the most expensive price from filtered products.
+        db_max_price = sorted(
+            products, key=lambda product: product.final_price, reverse=True)[0].final_price
 
         try:
             start_price = int(request.GET.get("start_price"))
@@ -79,11 +81,15 @@ def base_product_list_filter(request: HttpRequest) -> dict[str, Any]:
             start_price = 0
             end_price = db_max_price
 
-        products = list(filter(lambda product: end_price >= product.final_price >= start_price, products))
+        # Filter products based on entered prices.
+        products = list(filter(lambda product: end_price >=
+                        product.final_price >= start_price, products))
 
         if request.GET.get("in_stock") == "true":
-            products = list(filter(lambda product: product.stock_count, products))
+            products = list(
+                filter(lambda product: product.stock_count, products))
     else:
+        # Set default prices.
         db_max_price = 1000
         end_price = db_max_price
         start_price = 0
@@ -105,7 +111,7 @@ def base_product_list_filter(request: HttpRequest) -> dict[str, Any]:
 
     return {
         "categories": categories, "db_max_price": db_max_price,
-        "page_obj": page_obj,"paginate_by": paginate_by,
+        "page_obj": page_obj, "paginate_by": paginate_by,
         "start_price": start_price, "end_price": end_price
     }
 
@@ -127,7 +133,7 @@ def product_list_filter(request: HttpRequest) -> JsonResponse:
     """
     Filter the products and return the rendered templates.
     """
-    context = base_product_list_filter(request)    
+    context = base_product_list_filter(request)
     page_obj = context["page_obj"]
     start_price = context["start_price"]
     end_price = context["end_price"]
@@ -137,14 +143,19 @@ def product_list_filter(request: HttpRequest) -> JsonResponse:
 
     if request.GET.get("category_change") == "true":
         categories = context["categories"]
-        data["categories"] = render_to_string("components/category.html", {"categories": categories}, request)
+        data["categories"] = render_to_string(
+            "components/category.html", {"categories": categories}, request)
     elif request.GET.get("paginate_change") == "true":
         paginate_by = context["paginate_by"]
-        data["paginates"] = render_to_string("components/paginate.html", {"paginate_by": paginate_by})
+        data["paginates"] = render_to_string(
+            "components/paginate.html", {"paginate_by": paginate_by})
 
-    data["products"] = render_to_string("includes/products_partial.html", {"products":page_obj.object_list})
-    data["pagination"] = render_to_string("components/paging.html", {"page_obj":page_obj})
-    data["price_filter"] = render_to_string("components/price_filter.html", {"start_price":start_price, "end_price": end_price, "db_max_price": db_max_price})
+    data["products"] = render_to_string(
+        "includes/products_partial.html", {"products": page_obj.object_list})
+    data["pagination"] = render_to_string(
+        "components/paging.html", {"page_obj": page_obj})
+    data["price_filter"] = render_to_string("components/price_filter.html", {
+                                            "start_price": start_price, "end_price": end_price, "db_max_price": db_max_price})
 
     return JsonResponse(data)
 
@@ -164,7 +175,8 @@ class ProductDetailView(DetailView):
         Filter and return product comments based on user permissions.
         """
         user = self.request.user
-        comments = ProductComment.access_controlled.filter_queryset_by_user_perms(user)
+        comments = ProductComment.access_controlled.filter_queryset_by_user_perms(
+            user)
         product = self.get_object()
         return comments.filter(product=product)
 
@@ -186,20 +198,21 @@ class ProductDetailView(DetailView):
         if form.is_valid():
             # Create new comment instance without saving in database.
             comment = form.save(commit=False)
-            
+
             # Fill up comment fields.
             comment.product = self.get_object()
             comment.user = request.user
             if parent_id := request.POST.get("parent_id"):
                 comments = self.get_comments_queryset()
-                comment.parent = get_object_or_404(comments, parent=None, id=parent_id)
-            
+                comment.parent = get_object_or_404(
+                    comments, parent=None, id=parent_id)
+
             # Save comment in database.
             comment.save()
-            
+
             # Show success message to user.
-            messages.success(request, "نظر شما با موفقیت ثبت شد") 
-            
+            messages.success(request, "نظر شما با موفقیت ثبت شد")
+
             form = ProductCommentForm()
         self.object = self.get_object()
         context = self.get_context_data(object=self.object, form=form)
@@ -222,7 +235,8 @@ def remove_comment(request) -> JsonResponse:
         context = {
             "comments": comments.filter(parent=None)
         }
-        comment_list_area = render_to_string("includes/comments.html", context, request)
+        comment_list_area = render_to_string(
+            "includes/comments.html", context, request)
         data = {
             "comment_list_area": comment_list_area
         }

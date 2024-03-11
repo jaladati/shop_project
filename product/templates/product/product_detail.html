@@ -7,13 +7,7 @@
 
 {% block content %}
 
-{% if messages %}
-    <script type="text/javascript">
-        {% for message in messages %}
-            showAlert('{{message}}', '{{message.level_tag}}','top-end', true)
-        {% endfor %}
-    </script>
-{% endif %}
+{% include "includes/messages.html" with position="center" %}
 
 <!-- Start Banner Area -->
 <section class="banner-area organic-breadcrumb">

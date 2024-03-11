@@ -1,0 +1,7 @@
+{% if messages %}
+    <script type="text/javascript">
+        {% for message in messages %}
+            showAlert('{{message}}', '{{message.level_tag}}', '{position}}', true);
+        {% endfor %}
+    </script>
+{% endif %}

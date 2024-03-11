@@ -1,18 +1,14 @@
 {% extends "shared/base.html" %}
 
+{% load poll_extras %}
+
 {% block title %}
     پنل کاربری
 {% endblock %}
 
 {% block content %}
 
-{% if messages %}
-    <script type="text/javascript">
-        {% for message in messages %}
-            showAlert('{{message}}', '{{message.level_tag}}', 'center', true)
-        {% endfor %}
-    </script>
-{% endif %}
+{% include "includes/messages.html" with position="center" %}
 
 <!-- start banner Area -->
 <section class="banner-area organic-breadcrumb">

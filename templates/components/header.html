@@ -25,8 +25,6 @@
                             <ul class="dropdown-menu">
                                 <li class="nav-item"><a class="nav-link" href="{% url 'product:list' %}">محصولات</a></li>
                                 <li class="nav-item"><a class="nav-link" href="checkout.html">پرداخت</a></li>
-                                <li class="nav-item"><a class="nav-link" href="cart.html">سبد خرید</a></li>
-                                <li class="nav-item"><a class="nav-link" href="confirmation.html">Confirmation</a></li>
                             </ul>
                         </li>
                         <li class="nav-item submenu dropdown {% if request.resolver_match.app_name == "account" %}active{% endif %}">
@@ -84,10 +82,10 @@
             </div>
         </nav>
     </div>
-    <div class="search_input" id="search_input_box">
+    <div class="search_input" id="search_input_box" dir="rtl">
         <div class="container">
-            <form class="d-flex justify-content-between">
-                <input type="text" class="form-control" id="search_input" placeholder="Search Here">
+            <form class="d-flex justify-content-between" action="{% url 'product:list' %}">
+                <input type="text" class="form-control" id="search_input" name="q" value="{{request.GET.q}}" placeholder="اینجا سرچ کنید">
                 <button type="submit" class="btn"></button>
                 <span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
             </form>

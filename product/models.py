@@ -49,17 +49,21 @@ class Category(models.Model):
         verbose_name = "دسته بندی"
         verbose_name_plural = "دسته بندی ها"
 
-    def get_products(self) -> list:
+    def get_products(self) -> models.QuerySet:
         """
         Return all products of this category and it's subcategories.
         """
-        products = []
-        products.extend(self.products.all())
-        for sub_category in self.childs.all():
-            if sub_category.childs.all():
-                products.extend(sub_category.get_products())
-            else:
-                products.extend(sub_category.products.all())
+        def get_categories_id(category):
+            ids = []
+            ids.append(category.id)
+            for sub_category in category.childs.all():
+                if sub_category.childs.exists():
+                    ids.extend(get_categories_id(sub_category))
+                else:
+                    ids.append(sub_category.id)
+            return ids
+        ids = get_categories_id(self)
+        products = Product.objects.filter(category_id__in=ids)
         return products
 
     def get_enable_childs(self) -> list:

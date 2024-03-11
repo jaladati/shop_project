@@ -236,11 +236,16 @@ function showAlert(message, icon, position, onload) {
 };
 
 async function addProductToCartAlert(colors) {
+    if (Object.keys(colors).length == 0) {
+        console.log("test test");
+        showAlert("این محصول در حال حاضر موجود نمی‌باشد", "error", "center");
+        return false
+    };
     const inputOptions = new Promise((resolve) => {
         setTimeout(() => {
             resolve(colors);
         }, 1000);
-      });
+    });
     const { value: productId } = await Swal.fire({
         title: "رنگ محصول را انتخاب کنید",
         input: "radio",
