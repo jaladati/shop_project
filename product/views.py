@@ -6,18 +6,14 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden, HttpRequest, JsonResponse
+from django.http import Http404, HttpResponseForbidden, HttpRequest, JsonResponse
 from django.views.decorators.http import require_GET
-from django.views.generic import (
-    ListView,
-    DetailView,
-)
+from django.views.generic import DetailView
 from django.core.paginator import (
     Paginator,
     PageNotAnInteger,
     EmptyPage,
 )
-from operator import attrgetter
 from typing import Any
 
 from utils.decorators import superuser_required
@@ -38,37 +34,45 @@ def base_product_list_filter(request: HttpRequest) -> dict[str, Any]:
             ordering = "price"
         case "newest" | _:
             ordering = "-created_time"
-    # Find categories based on user permissions.
     user = request.user
-    db_categories = Category.access_controlled.filter_queryset_by_user_perms(
+    # Find all categories based on user permissions.
+    db_controlled_categories = Category.access_controlled.filter_queryset_by_user_perms(
         user)
+    # Find all products based on user permissions.
+    db_controlled_products = Product.access_controlled.filter_queryset_by_user_perms(
+        user
+    )
 
-    category = request.GET.get("category")
+    category_slug = request.GET.get("category")
 
-    if category:
-        category = get_object_or_404(db_categories, slug=category)
-        categories = [category]
+    if category_slug:
+        # Find the entered category.
+        category = db_controlled_categories.filter(slug=category_slug).first()
+
+        categories = []
         while True:
+            # Check if the category is accessible to the user.
+            if category in db_controlled_categories:
+                categories.insert(0, category)
+            else:
+                raise Http404("دسته بندی یافت نشد.")
+            # Check if this category has a parent.
             if (parent := category.parent) is not None:
-                categories.insert(0, parent)
                 category = parent
             else:
                 break
-        products = categories[-1].get_products()
-        if not user.is_superuser:
-            products = products.filter(is_enable=True)
-
-        products = products.order_by(ordering)
+        # Get the products of the selected category.
+        products = categories[-1].get_products(
+            db_controlled_products).order_by(ordering)
     else:
-        products = Product.access_controlled.filter_queryset_by_user_perms(
-            user).order_by(ordering)
-        categories = db_categories.filter(parent=None)
+        products = db_controlled_products.order_by(ordering)
+        categories = db_controlled_categories.filter(parent=None)
 
     # Search on products.
     q = request.GET.get("q", "")
     products = products.filter(title__contains=q)
 
-    # Check the product queryset is empty or no.
+    # Check the product queryset is empty or not.
     if products:
         # Get the most expensive price from filtered products.
         db_max_price = sorted(
@@ -116,16 +120,10 @@ def base_product_list_filter(request: HttpRequest) -> dict[str, Any]:
     }
 
 
-class ProductListView(ListView):
-    queryset = Product.enabled.all()
-    paginate_by = 10
-    template_name = "product/product_list.html"
-    context_object_name = "products"
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context.update(base_product_list_filter(self.request))
-        return context
+@require_GET
+def product_list(request):
+    context = base_product_list_filter(request)
+    return render(request, "product/product_list.html", context)
 
 
 @require_GET

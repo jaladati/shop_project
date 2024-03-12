@@ -36,6 +36,9 @@
                                 <a onclick="setProductFilter({category: '{{sub_category.slug}}', category_change: 'true'})">
                                     <span class="number">({% products_lenght category=sub_category %})</span>                                    
                                     {{sub_category.title}}
+                                    {% if not sub_category.is_enable %}
+                                            (غیر فعال)
+                                    {% endif %}
                                 </a>
                             </li>
                         {% endfor %}

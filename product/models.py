@@ -49,7 +49,7 @@ class Category(models.Model):
         verbose_name = "دسته بندی"
         verbose_name_plural = "دسته بندی ها"
 
-    def get_products(self) -> models.QuerySet:
+    def get_products(self, product_queryset=None) -> models.QuerySet:
         """
         Return all products of this category and it's subcategories.
         """
@@ -63,7 +63,10 @@ class Category(models.Model):
                     ids.append(sub_category.id)
             return ids
         ids = get_categories_id(self)
-        products = Product.objects.filter(category_id__in=ids)
+        if product_queryset is not None:
+            products = product_queryset.filter(category_id__in=ids)
+        else:
+            products = Product.objects.filter(category_id__in=ids)
         return products
 
     def get_enable_childs(self) -> list:

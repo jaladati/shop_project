@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 
 from product.views import (
-    ProductListView,
+    product_list,
     product_list_filter,
     ProductDetailView,
     remove_comment,
@@ -11,7 +11,7 @@ from product.views import (
 app_name = "product"
 
 urlpatterns = [
-    path("", ProductListView.as_view(), name="list"),
+    path("", product_list, name="list"),
     path("filter/", product_list_filter, name="filter"),
     path("remove-comment/", remove_comment, name="remove_coment"),
     path("change-comment-status/", change_comment_status, name="change_comment-status"),
