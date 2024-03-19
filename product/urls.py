@@ -4,8 +4,9 @@ from product.views import (
     product_list,
     product_list_filter,
     ProductDetailView,
+    like_product,
     remove_comment,
-    change_comment_status
+    change_comment_status,
 )
 
 app_name = "product"
@@ -13,6 +14,7 @@ app_name = "product"
 urlpatterns = [
     path("", product_list, name="list"),
     path("filter/", product_list_filter, name="filter"),
+    path("like-product/", like_product, name="like_product"),
     path("remove-comment/", remove_comment, name="remove_coment"),
     path("change-comment-status/", change_comment_status, name="change_comment-status"),
     re_path(r"(?P<slug>[-\w0-9]+)/$", ProductDetailView.as_view(), name="detail"),

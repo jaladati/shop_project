@@ -71,9 +71,13 @@
     padding-right: 15px;
     margin: 0;
 }
-  
+
 .cart-area .cart-items .cart-item .price .l-through {
     text-decoration: line-through;
     color: #cccccc;
     margin-bottom: 0;
+}
+
+.cursor-pointer {
+    cursor: pointer;
 }

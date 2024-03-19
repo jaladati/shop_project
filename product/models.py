@@ -104,6 +104,10 @@ class Product(models.Model):
 
     category = models.ForeignKey(to=Category, null=True, blank=True,
                                  on_delete=models.SET_NULL, related_name="products", verbose_name="دسته بندی")
+    viewers = models.ManyToManyField(to=User, related_name="viewed_products",
+                                     editable=False, verbose_name="بازدید کنندگان")
+    liked_by = models.ManyToManyField(to=User, related_name="liked_products",
+                                      verbose_name="پسندیده شده توسط")
 
     short_description = models.CharField(
         max_length=350, verbose_name="توضیحات کوتاه")

@@ -20,22 +20,42 @@
                         {% with product_colors=product.in_stock_color_variants %}
                             <a class="social-info" 
                                 onclick="
-                                {% if product_colors.first.color_name == '_' %}
-                                    addProductToCart({{product_colors.first.id}})
+                                {% if request.user.is_authenticated %}
+                                    {% if product_colors.first.color_name == '_' %}
+                                        addProductToCart({{product_colors.first.id}})
+                                    {% else %}
+                                        addProductToCartAlert({
+                                            {% for product_color in product_colors %}
+                                                {{product_color.id}}: '{{product_color.color_name}}',
+                                            {% endfor %}
+                                        })
+                                    {% endif %}
                                 {% else %}
-                                    addProductToCartAlert({
-                                        {% for product_color in product_colors %}
-                                            {{product_color.id}}: '{{product_color.color_name}}',
-                                        {% endfor %}
-                                    })
-                                {% endif %}
-                            ">
+                                    loginRequiredAlert('{% url "account:login" %}')
+                                {% endif %}">
                                 <span class="ti-bag"></span>
                                 <p class="hover-text">اضافه به سبد</p>
                             </a>
                         {% endwith %}
-                        <a href="" class="social-info">
-                            <span class="lnr lnr-heart"></span>
+                        <a class="social-info cursor-pointer"
+                            onclick="
+                                {% if request.user.is_authenticated %}
+                                    likeProduct({{product.id}})
+                                {% else %}
+                                    loginRequiredAlert('{% url "account:login" %}')
+                                {% endif %}">
+                            <div id="product-like-icon-{{product.id}}">
+                                {% if request.user in product.liked_by.all %}
+                                    <span class="lnr">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15.5" height="15.5" fill="red" class="bi bi-heart-fill" viewBox="0 0 16 16" style="vertical-align: 0;">
+                                            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+                                        </svg>
+                                    </span>
+                                {% else %}
+                                    <span class="lnr lnr-heart">
+                                    </span>
+                                {% endif %}
+                            </div>
                             <p class="hover-text">لیست آرزو</p>
                         </a>
                         <a href="" class="social-info">
@@ -50,7 +70,7 @@
         <div class="rounded-medium py-4  px-5">
             <h4>
                 <div class="alert alert-danger" role="alert">
-                    محصولی با این مشخصات پیدا نشد
+                    محصولی پیدا نشد
                 </div>
             </h4>
         </div>

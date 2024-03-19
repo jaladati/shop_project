@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseForbidden, HttpRequest, JsonResponse
 from django.views.decorators.http import require_GET
 from django.views.generic import DetailView
+from django.urls import reverse
 from django.core.paginator import (
     Paginator,
     PageNotAnInteger,
@@ -138,8 +139,7 @@ def product_list_filter(request: HttpRequest) -> JsonResponse:
     db_max_price = context["db_max_price"]
 
     data = {}
-
-    if request.GET.get("category_change") == "true":
+    if "true" in (request.GET.get("category_change"), request.GET.get("in_stock_change")):
         categories = context["categories"]
         data["categories"] = render_to_string(
             "components/category.html", {"categories": categories}, request)
@@ -149,9 +149,9 @@ def product_list_filter(request: HttpRequest) -> JsonResponse:
             "components/paginate.html", {"paginate_by": paginate_by})
 
     data["products"] = render_to_string(
-        "includes/products_partial.html", {"products": page_obj.object_list})
+        "includes/products_partial.html", {"products": page_obj.object_list}, request)
     data["pagination"] = render_to_string(
-        "components/paging.html", {"page_obj": page_obj})
+        "components/paging.html", {"page_obj": page_obj, "products_filter_url": reverse("product:filter")})
     data["price_filter"] = render_to_string("components/price_filter.html", {
                                             "start_price": start_price, "end_price": end_price, "db_max_price": db_max_price})
 
@@ -183,6 +183,12 @@ class ProductDetailView(DetailView):
         Overwrite the get_context_data method to include comments list and
         comment form.
         """
+        # Add user to product viewers.
+        product = self.get_object()
+        user = self.request.user
+        if user.is_authenticated:
+            product.viewers.add(user)
+
         context = super().get_context_data(**kwargs)
         comments = self.get_comments_queryset().filter(parent=None)
 
@@ -218,8 +224,37 @@ class ProductDetailView(DetailView):
 
 
 @require_GET
+@login_required
+def like_product(request) -> JsonResponse:
+    """Like products with ajax"""
+    # Get and validate product id.
+    try:
+        product_id = int(request.GET.get("id"))
+    except:
+        return JsonResponse({"error": "invalid id"})
+    # Get user.
+    user = request.user
+    # Find product.
+    product = Product.access_controlled.filter_queryset_by_user_perms(
+        user).filter(id=product_id).first()
+    # Return error if the product doesn't exist.
+    if product is None:
+        return JsonResponse({"error": "invalid id"})
+    # Like or dislike the product.
+    _, created = Product.liked_by.through.objects.get_or_create(
+        user=user, product=product)
+
+    if created:
+        return JsonResponse({"like": "true"})
+    else:
+        product.liked_by.remove(user)
+        return JsonResponse({"dislike": "true"})
+
+
+@require_GET
 @superuser_required(error=HttpResponseForbidden())
 def remove_comment(request) -> JsonResponse:
+    """remove product comments with ajax"""
     # Find comment.
     comments = ProductComment.objects.all()
     comment_id = request.GET.get("comment_id")
@@ -246,6 +281,11 @@ def remove_comment(request) -> JsonResponse:
 @require_GET
 @superuser_required(error=HttpResponseForbidden())
 def change_comment_status(request) -> JsonResponse:
+    """
+    Change the status of product comments with ajax.
+    If the comment is enabled, disable it, and if the comment is disabled,
+    enable it.
+    """
     # Find comment.
     comment_id = request.GET.get("comment_id")
     comment = ProductComment.objects.filter(id=comment_id).first()

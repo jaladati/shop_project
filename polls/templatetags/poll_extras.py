@@ -12,13 +12,20 @@ def separate(number):
 
 
 @register.simple_tag()
-def products_lenght(category, enable_filter=False):
+def products_lenght(category, enable_filter=False, in_stock_filter=False):
     if enable_filter:
-        products_count = len(category.products.filter(is_enable=True))
+        products = category.products.filter(is_enable=True)
     else:
-        products_count = len(category.products.all())
+        products = category.products.all()
+    if in_stock_filter in ["true", "True"]:
+        products = [product for product in products if product.stock_count > 0]
+        products_count = len(products)
+    else:
+        products_count = products.count()
+
     for sub_category in category.childs.all():
-        products_count += products_lenght(sub_category, enable_filter)
+        products_count += products_lenght(sub_category,
+                                          enable_filter, in_stock_filter)
 
     return products_count
 

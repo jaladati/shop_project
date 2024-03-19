@@ -42,7 +42,7 @@ function separate(number) {
 };
 
 
-function setProductFilter(data) {
+function setProductFilter(data, productFilterUrl) {
     for (let key in data) {
         setParameterWithOutReload(key, data[key])
     };
@@ -58,9 +58,10 @@ function setProductFilter(data) {
     }
 
     deleteParameterWithOutReload("category_change");
+    deleteParameterWithOutReload("in_stock_change");
     deleteParameterWithOutReload("paginate_change");
 
-    $.get("/products/filter", paramData).then(res => {
+    $.get(productFilterUrl, paramData).then(res => {
         if (res["categories"]) {
             $("#category-area").html(res["categories"]);
         } else if (res["paginates"]) {
@@ -76,9 +77,9 @@ function setProductFilter(data) {
 function productInStockFilter() {
     var isChecked = document.getElementById("toggle-switch-checkbox").checked;
     if (isChecked) {
-        setProductFilter({ "in_stock": "true" })
+        setProductFilter({ "in_stock": "true", "in_stock_change": "true" }, "/products/filter")
     } else {
-        setProductFilter({ "in_stock": "false" })
+        setProductFilter({ "in_stock": "false", "in_stock_change": "true" }, "/products/filter")
     };
 };
 
@@ -237,7 +238,6 @@ function showAlert(message, icon, position, onload) {
 
 async function addProductToCartAlert(colors) {
     if (Object.keys(colors).length == 0) {
-        console.log("test test");
         showAlert("این محصول در حال حاضر موجود نمی‌باشد", "error", "center");
         return false
     };
@@ -312,4 +312,25 @@ function increaseProductQuantity(inputId, maxVal) {
     if (!isNaN(sst) && sst < maxVal) {
         result.value++;
     };
+};
+
+
+function likeProduct(productId) {
+    $.get("/products/like-product", {
+        id: productId
+    }).then(res => {
+        if (res["like"]) {
+            $(`#product-like-icon-${productId}`).html(`
+                <span class="lnr">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15.5" height="15.5" fill="red" class="bi bi-heart-fill" viewBox="0 0 16 16" style="vertical-align: 0;">
+                        <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+                    </svg>
+                </span>
+            `)
+        } else if (res["dislike"]) {
+            $(`#product-like-icon-${productId}`).html('<span class="lnr lnr-heart"></span>')
+        } else {
+            showAlert("خطایی رخ داد", "error", "top-end")
+        };
+    });
 };

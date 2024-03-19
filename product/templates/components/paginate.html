@@ -1,5 +1,5 @@
 {% load static %}
-<select onchange="setProductFilter({paginate_by:value, paginate_change:'true'})">
+<select onchange="setProductFilter({paginate_by:value, paginate_change:'true', {{extra_data}}}, '{{products_filter_url}}')">
     <option selected disabled>نمایش {{paginate_by}} محصول</option>
     <option value="5">نمایش 5 محصول</option>
     <option value="10">نمایش 10 محصول</option>

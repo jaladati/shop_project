@@ -71,17 +71,17 @@
 			<!-- Start Filter Bar -->
 			<div class="filter-bar d-flex flex-wrap align-items-center">
 				<div class="sorting">
-					<select id="sortingBox" onchange="setProductFilter({sort: value})">
+					<select id="sortingBox" onchange="setProductFilter({sort: value}, '{% url "product:filter" %}')">
 						<option value="newest">جدید ترین</option>
 						<option value="cheapest">ارزان ترین</option>
 						<option value="most-expensive">گران ترین</option>
 					</select>
 				</div>
 				<div class="sorting mr-auto" id="paginate">
-					{% include "components/paginate.html" %}
+					{% include "components/paginate.html" with products_filter_url="/products/filter" %}
 				</div>
 				<div class="pagination">
-					{% include "components/paging.html" %}
+					{% include "components/paging.html" with products_filter_url="/products/filter" %}
 				</div>
 			</div>
 			<!-- End Filter Bar -->
@@ -95,11 +95,11 @@
 			<!-- Start Filter Bar -->
 			<div class="filter-bar d-flex flex-wrap align-items-center">
 				<div class="sorting mr-auto" id="paginate">
-					{% include "components/paginate.html" %}
+					{% include "components/paginate.html" with products_filter_url="/products/filter" %}
 				</div>
 
 				<div class="pagination">
-					{% include "components/paging.html" %}
+					{% include "components/paging.html" with products_filter_url="/products/filter" %}
 				</div>
 			</div>
 			<!-- End Filter Bar -->

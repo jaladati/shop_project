@@ -4,7 +4,7 @@
 <ul class="main-categories">
     {% if request.GET.category %}
         <li class="main-nav-list">
-            <a onclick="setProductFilter({category: '', category_change: 'true'})", cursor>
+            <a onclick="setProductFilter({category: '', category_change: 'true'}, '{% url "product:filter" %}')", cursor>
                 همه ی محصولات
             </a>
         </li>
@@ -14,11 +14,11 @@
         <li class="main-nav-list">
             <a {% if request.GET.category == category.slug %} href="#{{category.slug}}"
                 data-toggle="collapse" aria-expanded="true" aria-controls="{{ category.slug }}"
-                {% else %}onclick="setProductFilter({category: '{{category.slug}}', category_change: 'true'})"{% endif %}>
+                {% else %}onclick="setProductFilter({category: '{{category.slug}}', category_change: 'true'}, '{% url "product:filter" %}')"{% endif %}>
                 {% if user.is_superuser %}
-                    <span class="number">({% products_lenght category=category %})</span>
+                    <span class="number">({% products_lenght category=category in_stock_filter=request.GET.in_stock %})</span>
                 {% else %}
-                    <span class="number">({% products_lenght category=category enable_filter='true' %})</span>
+                    <span class="number">({% products_lenght category=category enable_filter="true" in_stock_filter=request.GET.in_stock %})</span>
                 {% endif %}
                 {{category.title}}
                 {% if not category.is_enable %}
@@ -33,8 +33,8 @@
                     {% if user.is_superuser %}
                         {% for sub_category in category.childs.all %}
                             <li class="main-nav-list child">
-                                <a onclick="setProductFilter({category: '{{sub_category.slug}}', category_change: 'true'})">
-                                    <span class="number">({% products_lenght category=sub_category %})</span>                                    
+                                <a onclick="setProductFilter({category: '{{sub_category.slug}}', category_change: 'true'}, '{% url "product:filter" %}')">
+                                    <span class="number">({% products_lenght category=sub_category in_stock_filter=request.GET.in_stock %})</span>                                    
                                     {{sub_category.title}}
                                     {% if not sub_category.is_enable %}
                                             (غیر فعال)
@@ -45,8 +45,8 @@
                     {% else %}
                         {% for sub_category in category.get_enable_childs %}
                             <li class="main-nav-list child">
-                                <a onclick="setProductFilter({category: '{{sub_category.slug}}', category_change: 'true'})">
-                                    <span class="number">({% products_lenght category=sub_category enable_filter='true' %})</span>                                    
+                                <a onclick="setProductFilter({category: '{{sub_category.slug}}', category_change: 'true'}, '{% url "product:filter" %}')">
+                                    <span class="number">({% products_lenght category=sub_category enable_filter='true' in_stock_filter=request.GET.in_stock %})</span>                                    
                                     {{sub_category.title}}
                                 </a>
                             </li>
@@ -58,5 +58,5 @@
     {% empty %}
         دسته بندی ای وجود ندارد
     {% endfor %}
-    
+
 </ul>

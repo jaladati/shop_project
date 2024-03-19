@@ -100,7 +100,24 @@
                                     loginRequiredAlert('{% url "account:login" %}')
                                 {% endif %}
                             ">افزودن به سبد خرید</a>
-                        <a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
+                        <a class="icon_btn cursor-pointer" id="product-like-icon-{{product.id}}" 
+                            onclick="
+                                {% if request.user.is_authenticated %}
+                                    likeProduct({{product.id}})
+                                {% else %}
+                                    loginRequiredAlert('{% url "account:login" %}')
+                                {% endif %}">
+                            {% if request.user in product.liked_by.all %}
+                                <span class="lnr">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15.5" height="15.5" fill="red" class="bi bi-heart-fill" viewBox="0 0 16 16" style="vertical-align: 0;">
+                                        <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+                                    </svg>
+                                </span>
+                            {% else %}
+                                <span class="lnr lnr-heart">
+                                </span>
+                            {% endif %}
+                        </a>
                     </div>
                     {% endwith %}
                 </div>
