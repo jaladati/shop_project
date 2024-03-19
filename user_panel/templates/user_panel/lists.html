@@ -1,0 +1,48 @@
+{% extends "shared/base.html" %}
+
+{% block title %}
+    لیست ها
+{% endblock %}
+
+{% block content %}
+
+<!-- start banner Area -->
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>لیست ها</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="{% url 'home:index' %}">خانه<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'user_panel:dashboard' %}">داشبورد<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'user_panel:lists' %}">لیست ها</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End banner Area -->
+
+<section class="section_gap">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                {% include "components/menu.html" %}
+            </div>
+            <div class="col-md-8">
+                <div class="col-md-2">
+                    <div class="card" style="text-align: right; width: 20rem;">
+                        <img src="{{request.user.liked_products.first.image.url}}" class="card-img-top">
+                        <div class="card-body" dir="rtl">
+                            <h5 class="card-title">لیست آرزو</h5>
+                            <p class="card-text">محصولاتی را که پسندیده اید می توانید در این لیست مشاهده کنید.</p>
+                            <a href="{% url 'user_panel:list_detail' list_title='لیست آرزو' %}" class="btn btn-primary">مشاهده</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
