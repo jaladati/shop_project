@@ -106,7 +106,7 @@ class Product(models.Model):
                                  on_delete=models.SET_NULL, related_name="products", verbose_name="دسته بندی")
     viewers = models.ManyToManyField(to=User, related_name="viewed_products",
                                      editable=False, verbose_name="بازدید کنندگان")
-    liked_by = models.ManyToManyField(to=User, related_name="liked_products",
+    liked_by = models.ManyToManyField(to=User, blank=True, related_name="liked_products",
                                       verbose_name="پسندیده شده توسط")
 
     short_description = models.CharField(

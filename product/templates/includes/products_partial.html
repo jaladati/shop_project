@@ -22,13 +22,13 @@
                                 onclick="
                                 {% if request.user.is_authenticated %}
                                     {% if product_colors.first.color_name == '_' %}
-                                        addProductToCart({{product_colors.first.id}})
+                                        addProductToCart({{product_colors.first.id}}, {{product.id}})
                                     {% else %}
                                         addProductToCartAlert({
                                             {% for product_color in product_colors %}
                                                 {{product_color.id}}: '{{product_color.color_name}}',
                                             {% endfor %}
-                                        })
+                                        }, {{product.id}})
                                     {% endif %}
                                 {% else %}
                                     loginRequiredAlert('{% url "account:login" %}')

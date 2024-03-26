@@ -3,18 +3,19 @@ from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 
-from product.models import ProductColorVariant
+from product.models import Product, ProductColorVariant
 from .models import Cart, CartItem
 
 
 @require_GET
 @login_required
 def add_product_to_cart(request):
-    # Get id and quantity.
+    # Get product color variant id, base product id and quantity.
     try:
         id = int(request.GET.get("id"))
+        base_product_id = int(request.GET.get("base_product_id"))
         quantity = int(request.GET.get("quantity", 1))
-    # If id or quantity is not numeric return error.
+    # If the entered data is not numeric return error.
     except:
         response = {"text": "مقداری نامعتبر وارد شده است",
                     "icon": "error", "position": "center"}
@@ -23,10 +24,15 @@ def add_product_to_cart(request):
     # Find product.
     product = ProductColorVariant.objects.filter(
         product__is_enable=True, id=id).first()
-    # If the product is not found, Return error.
+    # If the product is not found, return error.
     if product is None:
-        response = {"text": "محصولی یافت نشد", "icon": "error",
-                    "position": "center"}
+        base_product = Product.enabled.filter(id=base_product_id).first()
+        if base_product is not None and not base_product.stock_count:
+            response = {"text": "در انبار موجود نمی باشد", "icon": "error",
+                        "position": "center"}
+        else:
+            response = {"text": "محصولی یافت نشد", "icon": "error",
+                        "position": "center"}
         return JsonResponse(response)
     # Validate the entered quantity.
     if quantity < 1 or quantity > product.stock_count:

@@ -36,8 +36,9 @@ def get_cart_item_quantity(product, user):
     Return the quantity of this product in the user cart.
     """
     if isinstance(user, User):
-        cart_item = product.carts.filter(
-            cart__is_paid=False, cart__user_id=user.id).first()
-        if cart_item is not None:
-            return cart_item.quantity
+        if product is not None:
+            cart_item = product.carts.filter(
+                cart__is_paid=False, cart__user_id=user.id).first()
+            if cart_item is not None:
+                return cart_item.quantity
     return 0

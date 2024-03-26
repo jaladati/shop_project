@@ -236,7 +236,7 @@ function showAlert(message, icon, position, onload) {
     return show()
 };
 
-async function addProductToCartAlert(colors) {
+async function addProductToCartAlert(colors, baseProductId) {
     if (Object.keys(colors).length == 0) {
         showAlert("این محصول در حال حاضر موجود نمی‌باشد", "error", "center");
         return false
@@ -258,14 +258,15 @@ async function addProductToCartAlert(colors) {
         }
     });
     if (productId) {
-        addProductToCart(productId);
+        addProductToCart(productId, baseProductId);
     };
 };
 
-function addProductToCart(productId) {
+function addProductToCart(productId, baseProductId) {
     quantity = $("#sst").val()
     $.get("/cart/add-product-to-cart", {
         id: productId,
+        base_product_id: baseProductId,
         quantity: quantity
     }).then(res => {
         showAlert(res["text"], res["icon"], res["position"]);

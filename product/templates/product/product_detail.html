@@ -56,7 +56,7 @@
                     </h3>
                     {% with colors=product.in_stock_color_variants %}
                     <div id="product-price-area">
-                        <script type = "text/javascript">setProductPrice({% if colors.first.price %}{{colors.first.price}}{% else %}{{product.price}}{% endif %}, {{colors.first.final_price}})</script>
+                        <script type = "text/javascript">setProductPrice({{colors.first.get_price}}, {{colors.first.final_price}})</script>
                     </div>
                     <ul class="list">
                         {% with category=product.category %}
@@ -72,7 +72,7 @@
                         </li>
                     </ul>
                     <p>{{ product.short_description }}</p>
-                    {% if colors.first.color_name != '_' and product.stock_count %}
+                    {% if colors and colors.first.color_name != '_' %}
                         <h6 id="color-name">رنگ: {{ colors.first.color_name }}</h6>
                         <div class="color-icon-area" id="product-colors-area">
                             {% include "components/product_colors.html" %}
@@ -81,8 +81,9 @@
                     
                     <div class="product_count" id="product-quantity">
                         <label for="qty">تعداد: </label>
-                        <input type="text" name="qty" id="sst" maxlength="12" value="{% get_cart_item_quantity colors.first request.user %}" title="Quantity:" class="input-text qty">
-                        <button onclick="increaseProductQuantity('sst', {{colors.first.stock_count}})"
+                        <input type="text" class="input-text qty" name="qty" id="sst" maxlength="12"
+                            title="Quantity:" value="{% get_cart_item_quantity colors.first request.user %}">
+                            <button onclick="increaseProductQuantity('sst', {{colors.first.stock_count}})"
                                 class="increase items-count" type="button" id="increaseProductQuantityButton">
                             <i class="lnr lnr-chevron-up"></i>
                         </button>
@@ -95,7 +96,9 @@
                         <a class="primary-btn" id="addToCartButton" onclick=
                             "
                                 {% if request.user.is_authenticated %}
-                                    addProductToCart({{colors.first.id}})
+                                    addProductToCart(
+                                        {% if colors %}{{colors.first.id}}{% else %}0{% endif %},
+                                        {{product.id}})
                                 {% else %}
                                     loginRequiredAlert('{% url "account:login" %}')
                                 {% endif %}
