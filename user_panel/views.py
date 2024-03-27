@@ -1,5 +1,5 @@
 from django.urls import reverse, reverse_lazy
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.views import View
 from django.views.generic import UpdateView
@@ -17,6 +17,7 @@ from django.core.paginator import (
 
 from account import models
 from cart.models import Cart
+from .models import UserProductList
 from . import forms
 
 
@@ -74,8 +75,10 @@ def change_password(request):
 @login_required
 def lists(request):
     """User lists page"""
-    # TODO: add user's custom lists.
-    return render(request, "user_panel/lists.html")
+    user = request.user
+    lists = UserProductList.objects.filter(user=user)
+
+    return render(request, "user_panel/lists.html", {"lists": lists})
 
 
 def base_product_list_filter(request, list_title):
@@ -85,8 +88,8 @@ def base_product_list_filter(request, list_title):
         # Get the user's wish list products.
         products = user.liked_products.all()
     else:
-        # TODO: get the list from custom lists of user.
-        products = user.liked_products.all()
+        list = get_object_or_404(UserProductList, user=user, title=list_title)
+        products = list.products.all()
 
     # Paginate based on user selection.
     paginate_by = request.GET.get("paginate_by", "10")

@@ -30,15 +30,29 @@
                 {% include "components/menu.html" %}
             </div>
             <div class="col-md-8">
-                <div class="col-md-2">
-                    <div class="card" style="text-align: right; width: 20rem;">
-                        <img src="{{request.user.liked_products.first.image.url}}" class="card-img-top">
-                        <div class="card-body" dir="rtl">
-                            <h5 class="card-title">لیست آرزو</h5>
-                            <p class="card-text">محصولاتی را که پسندیده اید می توانید در این لیست مشاهده کنید.</p>
-                            <a href="{% url 'user_panel:list_detail' list_title='لیست آرزو' %}" class="btn btn-primary">مشاهده</a>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3" style="text-align: right; width: 20rem;">
+                            <img src="{{request.user.liked_products.first.image.url}}" class="card-img-top">
+                            <div class="card-body" dir="rtl">
+                                <h5 class="card-title">لیست آرزو</h5>
+                                <p class="card-text">محصولاتی را که پسندیده اید می توانید در این لیست مشاهده کنید.</p>
+                                <a href="{% url 'user_panel:list_detail' list_title='لیست آرزو' %}" class="btn btn-primary">مشاهده</a>
+                            </div>
                         </div>
                     </div>
+                    {% for list in lists %}
+                        <div class="col-md-6">
+                            <div class="card mb-3" style="text-align: right; width: 20rem;">
+                                <img src="{{list.products.first.image.url}}" class="card-img-top">
+                                <div class="card-body" dir="rtl">
+                                    <h5 class="card-title">{{ list.title }}</h5>
+                                    <p class="card-text">{{ list.description | truncatewords:15}}</p>
+                                    <a href="{% url 'user_panel:list_detail' list_title=list.title %}" class="btn btn-primary">مشاهده</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
