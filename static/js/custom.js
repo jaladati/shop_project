@@ -36,11 +36,25 @@ function deleteParameterWithOutReload(name) {
     window.history.pushState("", "", url);
 };
 
-
 function separate(number) {
     return (number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            };
+        };
+    };
+    return cookieValue;
+};
 
 function setProductFilter(data, productFilterUrl) {
     for (let key in data) {
@@ -160,10 +174,10 @@ function setStockMessage(stockCount) {
 function setProductPrice(price, finalPrice) {
     var message;
     if (price != finalPrice) {
-        message = `<h2>\$${separate(finalPrice)}</h2>
-        <h4 style="text-decoration: line-through;color:#ddddcc">\$${separate(price)}</h4>`;
+        message = `<h2>${separate(finalPrice)} تومان</h2>
+        <h4 style="text-decoration: line-through;color:#ddddcc">${separate(price)} تومان</h4>`;
     } else {
-        message = `<h2>\$${separate(price)}</h2>`;
+        message = `<h2>${separate(price)} تومان</h2>`;
     }
     document.getElementById("product-price-area").innerHTML = message
 };
@@ -288,12 +302,13 @@ function removeProductFromCart(itemId) {
         $("#cart-total-discounted-price").html(separate(res["cart_total_discounted_price"]))
         $("#cart-total-discounted").html(separate(res["cart_total_discounted"]))
         $("#cart-total-price").html(separate(res["cart_total_price"]))
-    })
+    });
 };
 
-function changeCartItemQuantity(productId, itemId, quantity) {
+function changeCartItemQuantity(productId, baseProductId, itemId, quantity) {
     $.get("/cart/add-product-to-cart", {
         id: productId,
+        base_product_id: baseProductId,
         quantity: quantity
     }).then(res => {
         if (res["icon"] == "error") {
@@ -315,7 +330,6 @@ function increaseProductQuantity(inputId, maxVal) {
     };
 };
 
-
 function likeProduct(productId) {
     $.get("/products/like-product", {
         id: productId
@@ -333,5 +347,83 @@ function likeProduct(productId) {
         } else {
             showAlert("خطایی رخ داد", "error", "top-end")
         };
+    });
+};
+
+function createList() {
+    var title = $("#list_title").val();
+    var description = $("#list_description").val();
+    var csrftoken = getCookie("csrftoken");
+    $.post("/user/lists/create-list/", {
+        csrfmiddlewaretoken: csrftoken,
+        title: title,
+        description: description
+    }).then(res => {
+        if (res["form"]) {
+            $("#list-creation-form-area").html(`${res["form"]}`);
+        } else {
+            $("#list-creation-form").modal("hide");
+            $("#user-lists").html(res["user_lists"])
+            var emptyForm = `
+                <div class="form-group text-right">
+                    <label for="list_title">عنوان:</label>
+                    <br/>
+                    <input class="form-control"
+                        type="text" name="title" id="list_title"
+                        maxlength="${$("#list_title")[0].maxLenght}" required >
+                </div>
+                <div class="form-group text-right">
+                    <label for="list_description">
+                        توضیحات:  (اختیاری)
+                    </label>
+                    <br/>
+                    <textarea name="description" class="form-control" rows="4" id="list_description"></textarea>
+                </div>
+            `
+            $("#list-creation-form-area").html(emptyForm);
+            showAlert("لیست شما با موفقیت ایجاد شد", "success", "center");
+        };
+    });
+};
+
+function editList(listId) {
+    var title = $("#list_title").val();
+    var description = $("#list_description").val();
+    $.get("/user/lists/edit-list", {
+        id: listId,
+        title: title,
+        description: description
+    }).then(res => {
+        if (res["form"]) {
+            $("#edit-list-form-area").html(`${res["form"]}`);
+        } else {
+            var newListUrl = `/user/lists/${title}/`;
+            var listDescription = description
+            if (!description) {
+                listDescription = `
+                    <div class="text-muted">
+                        هنوز توضیحاتی برای این لیست نوشته نشده است.
+                    </div>
+                `
+            };
+            $("#edit-list-form").modal("hide");
+            $("#page-title").html(title);
+            $("#page-url").html(title);
+            $("#page-url")[0].href = newListUrl;
+            $("#list-description").html(listDescription);
+            window.history.pushState("", "", newListUrl);
+            showAlert("لیست شما با موفقیت ویرایش شد", "success", "center");
+        };
+    });
+};
+
+function removeList(listId) {
+    $.get("/user/lists/remove-list/", {
+        id: listId
+    }).then(res => {
+        if (res["icon"] == "success") {
+            $(`#list-area-${listId}`).remove();
+        };
+        showAlert(res["text"], res["icon"], res["position"]);
     });
 };

@@ -60,9 +60,9 @@
                                                 </a>
                                             </td>
                                             <!-- Total Price Area -->
-                                            <td class="text-right font-weight-semibold align-middle p-4">
+                                            <td class="text-center font-weight-semibold align-middle p-4">
                                                 <h6 id="cart-item-total-price-{{item.id}}">
-                                                    {{item.total_price|separate}}
+                                                    {{item.total_price|separate}} (تومان)
                                                 </h6>
                                             </td>
                                             <!-- Quantity Area -->
@@ -76,7 +76,7 @@
                                                                 var sst = result.value;
                                                                 if( !isNaN( sst ) &amp;&amp; sst > 1 ) result.value--;
                                                                 if( result.value == 1 ) document.getElementById('reduced-btn-{{item.id}}').disabled = true;
-                                                                changeCartItemQuantity({{product.id}}, {{item.id}}, result.value);
+                                                                changeCartItemQuantity({{product.id}}, {{product.product.id}}, {{item.id}}, result.value);
                                                                 return false;">
                                                             <i class="fa fa-minus"></i>
                                                         </button>
@@ -90,7 +90,7 @@
                                                                 var sst = document.getElementById('item-quantity-{{item.id}}').value;
                                                                 var reducedBtn = document.getElementById('reduced-btn-{{item.id}}');
                                                                 if( sst > 1 ) reducedBtn.disabled = false;
-                                                                changeCartItemQuantity({{product.id}}, {{item.id}}, sst);
+                                                                changeCartItemQuantity({{product.id}}, {{product.product.id}},{{item.id}}, sst);
                                                                 ">
                                                             <i class="fa fa-plus"></i>
                                                         </button>
@@ -98,13 +98,14 @@
                                                 </div>
                                             </td>
                                             <!-- Price Area -->
-                                            <td class="text-right font-weight-semibold align-middle p-4 price">
+                                            <td class="text-center font-weight-semibold align-middle p-4 price">
                                                 {% if product.final_price != product.get_price %}
-                                                    <h6>${{product.final_price|separate}}</h6>
-                                                    <h6 class="l-through">${{product.get_price|separate}}</h6>
+                                                    <h6>{{product.final_price|separate}}</h6>
+                                                    <h6 class="l-through">{{product.get_price|separate}}</h6>
                                                 {% else %}
-                                                    <h6>${{product.get_price|separate}}</h6>
+                                                    <h6>{{product.get_price|separate}}</h6>
                                                 {% endif %}
+                                                <h6>(تومان)</h6>
                                             </td>
                                             <!-- Product Area -->
                                             <td class="p-4">
@@ -146,19 +147,19 @@
                             <div class="mt-4 mr-5">
                                 <strong>قیمت اولیه</strong>
                                 <div class="text-large">
-                                    <strong id="cart-total-price">{{cart.total_price|separate}}</strong>
+                                    <strong id="cart-total-price">{{cart.total_price|separate}} (تومان)</strong>
                                 </div>
                             </div>
                             <div class="mt-4 mr-5">
                                 <strong>تخفیف</strong>
                                 <div class="text-large">
-                                    <strong id="cart-total-discounted">{{cart.total_discounted|separate}}</strong>
+                                    <strong id="cart-total-discounted">{{cart.total_discounted|separate}} (تومان)</strong>
                                 </div>
                             </div>
                             <div class="mt-4 mr-5">
                                 <strong>قیمت بعد از تخفیف</strong>
                                 <div class="text-large">
-                                    <strong id="cart-total-discounted-price">{{cart.total_discounted_price|separate}}</strong>
+                                    <strong id="cart-total-discounted-price">{{cart.total_discounted_price|separate}} (تومان)</strong>
                                 </div>
                             </div>
                         </div>

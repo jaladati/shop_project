@@ -1,0 +1,25 @@
+<div class="form-group text-right">
+    {% with title=form.title %}
+        <div class="text-danger">
+            {{ form.non_field_errors }}
+            {{ title.errors }}
+        </div>
+        <label for="list_title">عنوان:</label>
+        <br/>
+        <input class="form-control {% if title.errors %}is-invalid{% endif %}"
+            id="list_title" type="text" name="title" value="{{title.value|default_if_none:''}}"
+            maxlength="{{title.field.max_length}}" dir="auto">
+    {% endwith %}
+</div>
+<div class="form-group text-right">
+    {% with description=form.description %}
+        <div class="invalid-feedback">
+            {{ description.errors }}
+        </div>
+        <label for="list_description">
+            توضیحات:  (اختیاری)
+        </label>
+        <br/>
+        <textarea name="description" class="form-control" rows="4" id="list_description" dir="auto">{{description.value|default_if_none:''}}</textarea>
+    {% endwith %}
+</div>

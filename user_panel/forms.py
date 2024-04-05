@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.password_validation import validate_password
 
 from account.models import User
+from .models import UserProductList
 
 
 class EditProfileForm(forms.ModelForm):
@@ -54,3 +55,15 @@ class ChangePasswordForm(forms.Form):
         if password == confirm_password:
             return confirm_password
         raise forms.ValidationError("با گذرواژه جدید همخوانی ندارد")
+
+
+class UserProductListForm(forms.ModelForm):
+    class Meta:
+        model = UserProductList
+        fields = ["title", "description"]
+
+    def clean_title(self):
+        title = self.cleaned_data["title"]
+        if title == "لیست آرزو":
+            raise forms.ValidationError("لیستی با این عنوان از قبل وجود دارد.")
+        return title
