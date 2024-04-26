@@ -251,7 +251,7 @@ function showAlert(message, icon, position, onload) {
 };
 
 async function addProductToCartAlert(colors, baseProductId) {
-    if (Object.keys(colors).length == 0) {
+    if (Object.keys(colors).length <= 0) {
         showAlert("این محصول در حال حاضر موجود نمی‌باشد", "error", "center");
         return false
     };
@@ -274,6 +274,64 @@ async function addProductToCartAlert(colors, baseProductId) {
     if (productId) {
         addProductToCart(productId, baseProductId);
     };
+};
+
+async function addProductToListAlert(lists, productId) {
+    if (Object.keys(lists).length <= 0) {
+        Swal.fire({
+            title: "هنوز لیستی نساختی",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "بریم به صفحه لیست های من",
+            cancelButtonText: "بعداً میسازم"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.assign("/user/lists/")
+            };
+        });
+        return false;
+    };
+    const { value: listId } = await Swal.fire({
+        title: "به کدوم لیست اضافه کنم؟",
+        input: "select",
+        inputOptions: lists,
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "افزودن",
+        cancelButtonText: "توقف",
+
+        showCancelButton: true,
+        inputValidator: (list) => {
+            return new Promise((resolve) => {
+                if (list) {
+                    resolve();
+                } else {
+                    resolve("یک لیست را باید انتخاب کنی");
+                }
+            });
+        }
+    });
+    if (listId) {
+        $.get("/user/lists/add-product-to-list/", {
+            list_id: listId,
+            product_id: productId
+        }).then(res => {
+            showAlert(res["text"], res["icon"], res["position"]);
+        })
+    }
+};
+
+function removeProductFromList(listId, productId) {
+    $.get("/user/lists/remove-product-from-list/", {
+        list_id: listId,
+        product_id: productId
+    }).then(res => {
+        if (res["error"]) {
+            showAlert(res["error"], "error", "top-end");
+        } else {
+            $("#single-product-" + productId).remove();
+        }
+    })
 };
 
 function addProductToCart(productId, baseProductId) {

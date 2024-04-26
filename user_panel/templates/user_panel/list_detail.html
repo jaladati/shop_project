@@ -11,12 +11,12 @@
     <div class="container">
         <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
             <div class="col-first">
-                <h1 id="page-title">{{list_title}}</h1>
+                <h1 id="page-title">{{list.title}}</h1>
                 <nav class="d-flex align-items-center">
                     <a href="{% url 'home:index' %}">خانه<span class="lnr lnr-arrow-left"></span></a>
                     <a href="{% url 'user_panel:dashboard' %}">داشبورد<span class="lnr lnr-arrow-left"></span></a>
                     <a href="{% url 'user_panel:lists' %}">لیست ها<span class="lnr lnr-arrow-left"></span></a>
-                    <a href="{% url 'user_panel:list_detail' list_title=list_title %}" id="page-url">{{list_title | truncatewords:5}}</a>
+                    <a href="{% url 'user_panel:list_detail' list_title=list.title %}" id="page-url">{{list.title | truncatewords:5}}</a>
                 </nav>
             </div>
         </div>
@@ -47,11 +47,13 @@
 					{% endif %}
 				</h6>
 
-				<!-- Button trigger modal of list creation -->
-				<button type="button" class="btn btn-primary mb-1" data-toggle="modal" data-target="#edit-list-form">
-					ویرایش لیست
-				</button>
-				
+				{% if list.title != "لیست آرزو" %}
+					<!-- Button trigger modal of list creation -->
+					<button type="button" class="btn btn-primary mb-1" data-toggle="modal" data-target="#edit-list-form">
+						ویرایش لیست
+					</button>
+				{% endif %}
+					
 				<!-- Modal of list creation form -->
 				<div class="modal fade" dir="rtl" id="edit-list-form" tabindex="-1" role="dialog" aria-labelledby="edit-list-form-title" aria-hidden="true">
 					<div class="modal-dialog modal-dialog-centered" role="document">
@@ -75,28 +77,28 @@
 			<!-- Start Filter Bar -->
 			<div class="filter-bar d-flex flex-wrap align-items-center">
 				<div class="sorting mr-auto" id="paginate">
-					{% include "components/paginate.html" with extra_data="list_title: '{{list_title}}'" products_filter_url="/user/lists/filter" %}
+					{% include "components/paginate.html" with extra_data="list_title: '{{list.title}}'" products_filter_url="/user/lists/filter" %}
 				</div>
 				<div class="pagination">
-					{% include "components/paging.html" with extra_data="list_title: '{{list_title}}'" products_filter_url="/user/lists/filter" %}
+					{% include "components/paging.html" with extra_data="list_title: '{{list.title}}'" products_filter_url="/user/lists/filter" %}
 				</div>
 			</div>
 			<!-- End Filter Bar -->
 
 			<!-- Start Best Seller -->
 			<section class="lattest-product-area pb-40 category-list" id="products-area">
-				{% include "includes/products_partial.html" with products=page_obj.object_list %}
+				{% include "includes/products_partial.html" with products=page_obj.object_list list_id=list.id %}
 			</section>
 			<!-- End Best Seller -->
 
 			<!-- Start Filter Bar -->
 			<div class="filter-bar d-flex flex-wrap align-items-center">
 				<div class="sorting mr-auto" id="paginate">
-					{% include "components/paginate.html" with extra_data="list_title: '{{list_title}}'" products_filter_url="/user/lists/filter" %}
+					{% include "components/paginate.html" with extra_data="list_title: '{{list.title}}'" products_filter_url="/user/lists/filter" %}
 				</div>
 
 				<div class="pagination">
-					{% include "components/paging.html" with extra_data="list_title: '{{list_title}}'" products_filter_url="/user/lists/filter" %}
+					{% include "components/paging.html" with extra_data="list_title: '{{list.title}}'" products_filter_url="/user/lists/filter" %}
 				</div>
 			</div>
 			<!-- End Filter Bar -->

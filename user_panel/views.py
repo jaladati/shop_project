@@ -17,6 +17,7 @@ from django.core.paginator import (
 
 from account import models
 from cart.models import Cart
+from product.models import Product
 from .models import UserProductList
 from . import forms
 
@@ -126,9 +127,14 @@ def list_detail(request, list_title):
     page_obj, _, list = base_product_list_filter(request, list_title)
     edit_list_form = forms.UserProductListForm(instance=list)
 
+    if not list:
+        list = {
+            "title": "لیست آرزو",
+            "description": "محصولاتی که پسندیده بوده اید را می توانید در اینجا مشاهده کنید."
+        }
+
     context = {
         "page_obj": page_obj,
-        "list_title": list_title,
         "edit_list_form": edit_list_form,
         "list": list
     }
@@ -249,6 +255,107 @@ def remove_list(request) -> JsonResponse:
 
     response = {
         "text": "لیست حذف شد", "icon": "success", "position": "center"
+    }
+    return JsonResponse(response)
+
+
+@require_GET
+@login_required
+def add_product_to_list(request) -> JsonResponse:
+    """Add product to user list with ajax"""
+    # Try to get the list id and product id.
+    try:
+        list_id = int(request.GET.get("list_id"))
+        product_id = int(request.GET.get("product_id"))
+    # Return error if the type of list id or product id is incorrect.
+    except:
+        response = {
+            "text": "خطایی رخ داد",
+            "icon": "error",
+            "position": "center"
+        }
+        return JsonResponse(response)
+
+    user = request.user
+
+    # Get the products that this user can access.
+    products = Product.access_controlled.filter_queryset_by_user_perms(user)
+
+    # Find the selected product.
+    product = products.filter(id=product_id).first()
+
+    # Return error if product not found.
+    if product is None:
+        response = {
+            "text": "محصول یافت نشد",
+            "icon": "error",
+            "positino": "center"
+        }
+        return JsonResponse(response)
+
+    # Find the selected list.
+    list = UserProductList.objects.filter(user=user, id=list_id).first()
+
+    # Return error if list not found.
+    if list is None:
+        response = {
+            "text": "لیست یافت نشد",
+            "icon": "error",
+            "positino": "center"
+        }
+        return JsonResponse(response)
+
+    # Add product to list.
+    list.products.add(product)
+
+    response = {
+        "text": "محصول با موفقیت به لیست شما اضافه شد",
+        "icon": "success",
+        "position": "center"
+    }
+    return JsonResponse(response)
+
+
+@require_GET
+@login_required
+def remove_product_from_list(request) -> JsonResponse:
+    """Remove the product from user list with ajax"""
+    # Try to get the list id and product id.
+    try:
+        list_id = int(request.GET.get("list_id"))
+        product_id = int(request.GET.get("product_id"))
+    # Return error if the type of list id or product id is incorrect.
+    except:
+        response = {
+            "error": "خطایی رخ داد",
+        }
+        return JsonResponse(response)
+
+    # Try to get the selected product.
+    try:
+        product = Product.objects.get(id=product_id)
+    # Return error if the product not found.
+    except:
+        response = {
+            "error": "محصول یافت نشد"
+        }
+        return JsonResponse(response)
+
+    # Try to get the user list.
+    try:
+        list = UserProductList.objects.get(user=request.user, id=list_id)
+    # Return error if the list not found.
+    except:
+        response = {
+            "error": "لیست یافت نشد"
+        }
+        return JsonResponse(response)
+
+    # Remove the product from list.
+    list.products.remove(product)
+
+    response = {
+        "status": "removed"
     }
     return JsonResponse(response)
 

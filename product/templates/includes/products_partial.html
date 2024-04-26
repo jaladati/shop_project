@@ -1,7 +1,7 @@
 <div class="row">
     <!-- single product -->
     {% for product in products %}
-        <div class="{% if class %}{{class}}{% else %}col-lg-4 col-md-6{% endif %}">
+        <div class="{% if class %}{{class}}{% else %}col-lg-4 col-md-6{% endif %}" id="single-product-{{product.id}}">
             <div class="single-product">
                 <a href="{{ product.get_absolute_url }}" class="social-info">
                     <img class="img-fluid" src="{{ product.image.url }}">
@@ -58,10 +58,28 @@
                             </div>
                             <p class="hover-text">لیست آرزو</p>
                         </a>
-                        <a href="" class="social-info">
-                            <span class="lnr lnr-sync"></span>
-                            <p class="hover-text">مقایسه</p>
+                        <a class="social-info"
+                            onclick="
+                                {% if request.user.is_authenticated %}
+                                    addProductToListAlert({
+                                        {% for list in request.user.product_lists.all %}
+                                            {{ list.id }}: '{{ list.title }}',
+                                        {% endfor %} }, {{product.id}}
+                                        )
+                                {% else %}
+                                    loginRequiredAlert('{% url "account:login" %}')
+                                {% endif %}
+                            ">
+                            <span class="ti-list">
+                            </span>
+                            <p class="hover-text">لیست‌های من</p>
                         </a>
+                        {% if request.resolver_match.view_name == 'user_panel:list_detail' and request.resolver_match.kwargs.list_title != 'لیست آرزو'%}
+                            <a class="social-info" onclick="removeProductFromList({{list_id}}, {{product.id}})">
+                                <span class="ti-trash"></span>
+                                <p class="hover-text">حذف از لیست</p>
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

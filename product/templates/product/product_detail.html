@@ -102,7 +102,8 @@
                                 {% else %}
                                     loginRequiredAlert('{% url "account:login" %}')
                                 {% endif %}
-                            ">افزودن به سبد خرید</a>
+                            ">افزودن به سبد خرید
+                        </a>
                         <a class="icon_btn cursor-pointer" id="product-like-icon-{{product.id}}" 
                             onclick="
                                 {% if request.user.is_authenticated %}
@@ -120,6 +121,19 @@
                                 <span class="lnr lnr-heart">
                                 </span>
                             {% endif %}
+                        </a>
+                        <a class="icon_btn cursor-pointer"
+                            onclick="
+                                {% if request.user.is_authenticated %}
+                                    addProductToListAlert({
+                                        {% for list in request.user.product_lists.all %}
+                                            {{ list.id }}: '{{ list.title }}',
+                                        {% endfor %} }, {{product.id}})
+                                {% else %}
+                                    loginRequiredAlert('{% url "account:login" %}')
+                                {% endif %}">
+                            <span class="lnr lnr-list">
+                            </span>
                         </a>
                     </div>
                     {% endwith %}
