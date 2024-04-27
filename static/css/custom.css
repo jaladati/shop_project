@@ -81,3 +81,11 @@
 .cursor-pointer {
     cursor: pointer;
 }
+
+.toggle-password-icon {
+    position: absolute;
+    left: 25px;
+    bottom: 10%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
