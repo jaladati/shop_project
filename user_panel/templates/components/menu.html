@@ -20,6 +20,10 @@
         class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'cart' %}active custom-color{% endif %}">
         سبد خرید
     </a>
+    <a href="{% url 'user_panel:orders' %}"
+        class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'orders' or request.resolver_match.url_name == 'order_detail' %}active custom-color{% endif %}">
+        سفارش ها
+    </a>
 </div>
 <div class="card">
     <img class="card-img-bottom" src="{{ user.avatar.url }}">

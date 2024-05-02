@@ -7,7 +7,7 @@ from django.views.decorators.http import require_GET, require_POST
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
-from django.http import HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.contrib import messages
 from django.core.paginator import (
     Paginator,
@@ -371,3 +371,27 @@ def cart(request):
         "cart": cart
     }
     return render(request, "user_panel/cart.html", context)
+
+
+@require_GET
+@login_required
+def orders(request):
+    """User orders page"""
+    user = request.user
+    paid_carts = user.carts.filter(is_paid=True)
+
+    return render(request, "user_panel/orders.html", {"orders": paid_carts})
+
+
+@require_GET
+@login_required
+def order_detail(request, order_id):
+    """User order details page"""
+    user = request.user
+    # Find the selected order.
+    order = user.carts.filter(is_paid=True, id=order_id).first()
+    # Return error if the order isn't found.
+    if order is None:
+        return Http404("سفارش یافت نشد")
+
+    return render(request, "user_panel/order_detail.html", {"order": order})

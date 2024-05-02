@@ -54,13 +54,9 @@ class Category(models.Model):
         Return all products of this category and it's subcategories.
         """
         def get_categories_id(category):
-            ids = []
-            ids.append(category.id)
+            ids = [category.id]
             for sub_category in category.childs.all():
-                if sub_category.childs.exists():
-                    ids.extend(get_categories_id(sub_category))
-                else:
-                    ids.append(sub_category.id)
+                ids.extend(get_categories_id(sub_category))
             return ids
         ids = get_categories_id(self)
         if product_queryset is not None:

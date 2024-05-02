@@ -1,0 +1,139 @@
+{% extends "shared/base.html" %}
+{% load poll_extras jformat %}
+
+{% block title %}
+    جزییات سفارش
+{% endblock %}
+
+{% block content %}
+
+<!-- start banner Area -->
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>جزییات سفارش</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="{% url 'home:index' %}">خانه<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'user_panel:dashboard' %}">داشبورد<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'user_panel:orders' %}">سفارش ها<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'user_panel:order_detail' order.id %}">جزییات سفارش</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End banner Area -->
+
+<section class="section_gap">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                {% include "components/menu.html" %}
+            </div>
+            <div class="col-md-8 text-right">
+                <div class="order-detatils">
+                    <h4 class="mt-1 mb-3 alert alert-dark text-center">
+                        مشخصات سفارش
+                        <span class="lnr lnr-cart"></span>
+                    </h4>
+                    
+                    <h5 class="mb-3">
+                        کد سفارش: {{ order.id }}
+                        <span class="ti-shortcode ml-2"></span>
+                    </h5>
+                    <h5 class="mb-3">
+                        پرداخت در تاریخ: {{ order.payment_date|jformat:"%Y/%m/%d در ساعت: %H:%M:%S" }}
+                        <span class="lnr lnr-calendar-full ml-2"></span>
+                    </h5>
+                    <h5 class="mb-3">
+                        قیمت پرداختی: {{ order.total_price|separate }} تومان
+                        <span class="ti-money ml-2"></span>
+                    </h5>
+                </div>
+                <div class="receiver-details">
+                    <h4 class="mt-1 mb-3 alert alert-dark text-center">
+                        مشخصات تحویل گیرنده
+                        <span class="ti-user"></span>
+                    </h4>
+                    <h5 class="mb-3">
+                        نام: {{ order.first_name }} {{ order.last_name }}
+                        <span class="fa fa-user ml-2"></span>
+                    </h5>
+                    <h5 class="mb-3">
+                        شماره: {{ order.phone }}
+                        <span class="fa fa-phone ml-2"></span>
+                    </h5>
+                    <h5 class="mb-3">
+                        آدرس: {{ order.address }}
+                        <span class="ti-location-pin ml-2"></span>
+                    </h5>
+                    <h5 class="mb-3">
+                        کد پستی: {{ order.postal_code }}
+                        <span class="fa fa-address-book-o ml-2"></span>
+                    </h5>
+                </div>
+                <div class="orders">
+                    <table class="table text-center" dir="auto">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">
+                                    تصویر
+                                </th>
+                                <th scope="col">
+                                    نام محصول
+                                </th>
+                                <th scope="col">
+                                    رنگ
+                                </th>
+                                <th scope="col">
+                                    قیمت تکی
+                                </th>
+                                <th scope="col">
+                                    تعداد
+                                </th>
+                                <th scope="col">
+                                    قیمت‌کل
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                            {% with product=item.product %}
+                                <tr>
+                                    <th scope="row">
+                                        <a href="{{product.get_absolute_url}}">
+                                            <img src="{{product.product.image.url}}" width="100" height="100">
+                                        </a>
+                                    </th>
+                                    <td class="text-right">
+                                        <a href="{{product.get_absolute_url}}" class="text-secondary">
+                                            {{ product.product.title }}
+                                        </a>
+                                    </td>
+                                    <td class="text-right">
+                                        <span class="ui-product-color ui-product-color-sm align-text-bottom"
+                                        title="{{product.color_name}}"
+                                        style="background:{{product.color_hex_code}};"></span> 
+                                    </td>
+                                    <td>
+                                        {{ item.paid_price|separate }}
+                                    </td>
+                                    <td>
+                                        {{ item.quantity }}
+                                    </td>
+                                    <td>
+                                        {{ item.total_price|separate }}
+                                    </td>
+                                </tr>
+                            {% endwith %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

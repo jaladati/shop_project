@@ -1,0 +1,69 @@
+{% extends "shared/base.html" %}
+{% load poll_extras jformat %}
+
+{% block title %}
+    سفارش ها
+{% endblock %}
+
+{% block content %}
+
+<!-- start banner Area -->
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>سفارش ها</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="{% url 'home:index' %}">خانه<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'user_panel:dashboard' %}">داشبورد<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'user_panel:orders' %}">سفارش ها</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End banner Area -->
+
+<section class="section_gap">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                {% include "components/menu.html" %}
+            </div>
+            <div class="col-md-8">
+                <div class="orders-area text-right">
+                    {% for order in orders %}
+                        <div class="single-order">
+                            <div class="order-details mb-3">
+                                <h5>
+                                    تاریخ پرداخت: {{ order.payment_date|jformat:"%Y/%m/%d" }}
+                                </h5>
+                                <h5>
+                                    کد سفارش: {{ order.id }}
+                                </h5>
+                                <h5>
+                                    مبلغ پرداخت شده: {{ order.total_price|separate }} تومان
+                                </h5>
+                                <h5>
+                                    تعداد کالاهای خریداری شده: {{ order.items.count }}
+                                </h5>
+                            </div>
+                            <div class="order-images">
+                                {% for item in order.items.all %}
+                                    <a href="{{item.product.get_absolute_url}}">
+                                        <img src="{{item.product.product.image.url}}" with="100" height="100">
+                                    </a>
+                                {% endfor %}
+                            </div>
+                            <a class="btn btn-warning mt-3" href="{% url 'user_panel:order_detail' order_id=order.id %}">
+                                مشاهده جزییات
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

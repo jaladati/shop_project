@@ -89,3 +89,30 @@
     transform: translateY(-50%);
     cursor: pointer;
 }
+
+.orders-area {
+    border: 2px solid #ecac15;
+    border-radius: 5px;
+    direction: rtl;
+}
+
+.orders-area .single-order {
+    padding: 5%;
+    border-bottom: 5px solid #ecac15;
+}
+
+.orders-area .single-order .order-details h5 {
+    margin-top: 3px;
+}
+
+.orders-area .single-order .order-images {
+    overflow: auto;
+    white-space: nowrap;
+}
+
+.orders-area .single-order .order-images img {
+    display: inline-block;
+    margin-right: 5%;
+    padding-bottom: 10px;
+    cursor: pointer;
+}
