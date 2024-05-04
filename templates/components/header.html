@@ -44,7 +44,11 @@
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                                 aria-haspopup="true" aria-expanded="false">وبلاگ</a>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="contact.html">درباره ما</a></li>
+                        <li class="nav-item {% if request.resolver_match.app_name == "contact_us" %}active{% endif %}">
+                            <a class="nav-link" href="{% url 'contact_us:contact_us' %}">
+                                تماس با ما
+                            </a>
+                        </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         {% if request.user.is_superuser %}

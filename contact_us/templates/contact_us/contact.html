@@ -1,0 +1,102 @@
+{% extends "shared/base.html" %}
+
+{% block title %}تماس با ما{% endblock %}
+
+
+{% block content %}
+
+{% include "includes/messages.html" with position="top-first" %}
+
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+	<div class="container">
+		<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+			<div class="col-first">
+				<h1>تماس با ما</h1>
+				<nav class="d-flex align-items-center">
+                    <a href="{% url 'home:index' %}">خانه<span class="lnr lnr-arrow-left"></span></a>
+                    <a href="{% url 'contact_us:contact_us' %}">تماس با ما</a>
+                </nav>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- End Banner Area -->
+
+<!--================Contact Area =================-->
+<section class="contact_area section_gap_bottom">
+	<div class="container">
+		<div id="mapBox" class="mapBox" data-lat="40.701083" data-lon="-74.1522848" data-zoom="13" data-info="PO Box CT16122 Collins Street West, Victoria 8007, Australia."
+			data-mlat="40.701083" data-mlon="-74.1522848">
+		</div>
+		<div class="row">
+			<div class="col-lg-3">
+				<div class="contact_info">
+					<div class="info_item">
+						<i class="lnr lnr-home"></i>
+						<h6>ایران، تهران</h6>
+						<p>محل کار</p>
+					</div>
+					<div class="info_item">
+						<i class="lnr lnr-phone-handset"></i>
+						<h6>09123456789</h6>
+						<p>شماره پشتیبانی</p>
+					</div>
+					<div class="info_item">
+						<i class="lnr lnr-envelope"></i>
+						<h6>test@gmail.com</h6>
+						<p>ایمیل</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-9">
+				<form class="row contact_form" dir="rtl" method="post" id="contactForm" novalidate="novalidate">
+					{% csrf_token %}
+					{% with message=form.message name=form.name phone=form.phone email=form.email subject=form.subject %}
+					<div class="col-md-6">
+						<div class="form-group">
+							<div class="text-danger">
+								{{ message.errors|default:"*" }}
+							</div>
+							{{ message }}
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<div class="text-danger">
+								{{ name.errors|default:"*" }}
+							</div>
+							{{name}}
+						</div>
+						<div class="form-group">
+							<div class="text-danger">
+								{{ phone.errors|default:"*" }}
+							</div>
+							{{phone}}
+						</div>
+						<div class="form-group">
+							<div class="text-danger">
+								{{ email.errors }}
+							</div>
+							{{email}}
+						</div>
+						<div class="form-group">
+							<div class="text-danger">
+								{{ subject.errors|default:"*" }}
+							</div>
+							<label class="mr-2"for="subject">موضوع</label>
+							{{subject}}
+						</div>
+					</div>
+					{% endwith %}
+					<div class="col-md-12 text-right">
+						<button type="submit" value="submit" class="primary-btn">ارسال پیام</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</section>
+<!--================Contact Area =================-->
+
+{% endblock %}

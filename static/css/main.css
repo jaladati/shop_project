@@ -8075,6 +8075,7 @@ label {
 
 .contact_form .form-group {
   margin-bottom: 10px;
+  text-align: right;
 }
 
 .contact_form .form-group .form-control {
@@ -8113,7 +8114,15 @@ label {
 }
 
 .contact_form .form-group textarea.form-control {
-  height: 134px;
+  height: 235px;
+}
+
+.contact_form .form-group .nice-select {
+  width: 75%;
+}
+
+.contact_form .form-group .nice-select .list {
+  width: 90%;
 }
 
 .contact_form .primary-btn {
