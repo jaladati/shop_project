@@ -8,6 +8,7 @@ medias/images/*
 !medias/images/profiles/
 medias/images/profiles/*
 !medias/images/profiles/default-avatar.png
+shop_project/settings.py
 
 # Backup files # 
 *.bak 
