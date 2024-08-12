@@ -27,7 +27,7 @@ For run this project on your system as development mode, you can use steps below
      ```bash
      git clone https://github.com/jaladati/shop_project # step 2
      cd shop_project # Enter the project.
-     python3 -m venv venv && venv/bin/activate.bat # step 3
+     python -m venv venv && venv/Scripts/activate # step 3
      pip install -r requirements.txt # step 4
      move shop_project/settings.py.sample shop_project/settings.py # step 5
      python manage.py makemigrations && python manage.py migrate # step 6
