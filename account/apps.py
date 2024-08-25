@@ -6,3 +6,6 @@ class AccountConfig(AppConfig):
     name = 'account'
     verbose_name = 'حساب'
     verbose_name_plural = 'حساب ها'
+
+    def ready(self) -> None:
+        from . import signals

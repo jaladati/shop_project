@@ -21,7 +21,7 @@ For run this project on your system as development mode, you can use steps below
      pip install -r requirements.txt # step 4
      mv shop_project/settings.py.sample shop_project/settings.py # step 5
      python manage.py makemigrations && python manage.py migrate # step 6
-     python manage.py createsuperuser # step 7
+     python manage.py createsuperuser2 # step 7
      ```
      For windows:
      ```bash
@@ -31,7 +31,7 @@ For run this project on your system as development mode, you can use steps below
      pip install -r requirements.txt # step 4
      move shop_project/settings.py.sample shop_project/settings.py # step 5
      python manage.py makemigrations && python manage.py migrate # step 6
-     python manage.py createsuperuser # step 7
+     python manage.py createsuperuser2 # step 7
      ```
   8. Run project using `python manage.py runserver`
   9. Open project on <u>http://localhost:8000</u>
